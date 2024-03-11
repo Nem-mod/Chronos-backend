@@ -5,11 +5,13 @@ import {
   Request,
   Get,
   Response,
+  HttpCode,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { AccessJwtAuthGuard } from './guard/access-jwt-auth.guard';
+import { RefreshJwtAuthGuard } from './guard/refresh-jwt-auth.guard';
 
 @Controller({
   path: `auth`,
@@ -31,9 +33,21 @@ export class AuthController {
     return true;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RefreshJwtAuthGuard)
+  @HttpCode(204)
+  @Post(`logout`)
+  async logout(
+    @Request() req: RequestType,
+    @Response({ passthrough: true }) res: ResponseType,
+  ) {
+    await this.authService.logout(req.cookies.refreshToken);
+    await this.authService.deleteAuthCookie(res);
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
   @Get(`profile`)
   async getProfile(@Request() req) {
-    return req.user;
+    const { password, ...rest } = req.user;
+    return rest;
   }
 }

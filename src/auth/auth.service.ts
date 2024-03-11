@@ -47,6 +47,10 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  async logout(refreshToken: string) {
+    this.expiredRefreshTokens.add(refreshToken);
+  }
+
   async setAuthCookies(
     res: ResponseType,
     tokens: { accessToken; refreshToken },
@@ -55,8 +59,8 @@ export class AuthService {
     res.cookie(`refreshToken`, tokens.refreshToken, httponlyCookieOptions);
   }
 
-  async deleteAuthCookie(res, tokens: { accessToken; refreshToken }) {
-    res.clearCookie('refreshToken', httponlyCookieOptions);
-    res.clearCookie('accessToken', httponlyCookieOptions);
+  async deleteAuthCookie(res) {
+    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken');
   }
 }
