@@ -30,7 +30,7 @@ export class AuthController {
 
     await this.authService.setAuthCookies(res, tokens);
 
-    return true;
+    return req.user;
   }
 
   @UseGuards(RefreshJwtAuthGuard)
@@ -39,15 +39,14 @@ export class AuthController {
   async logout(
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
-  ) {
+  ): Promise<void> {
     await this.authService.logout(req.cookies.refreshToken);
     await this.authService.deleteAuthCookie(res);
   }
 
   @UseGuards(AccessJwtAuthGuard)
   @Get(`profile`)
-  async getProfile(@Request() req) {
-    const { password, ...rest } = req.user;
-    return rest;
+  async getProfile(@Request() req: RequestType) {
+    return req.user;
   }
 }

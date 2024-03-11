@@ -23,8 +23,11 @@ export class AccessJwtStrategy extends PassportStrategy(Strategy, `accessJwt`) {
 
   async validate(payload: any) {
     const user = await this.userService.findOne(payload.username);
+
     if (!user) throw new UnauthorizedException();
-    return user;
+    const { password, ...rest } = user;
+
+    return rest;
   }
 
   private static extractJwtFromCookies(req: RequestType) {

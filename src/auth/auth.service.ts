@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
+import { CredentialsDto } from './dto/credentials.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,13 +27,13 @@ export class AuthService {
     return null;
   }
 
-  async validateRefresh(refreshToken: string) {
-    if (this.expiredRefreshTokens.has(refreshToken))
+  async validateRefresh(tokens: CredentialsDto): Promise<CredentialsDto> {
+    if (this.expiredRefreshTokens.has(tokens.refreshToken))
       throw new ForbiddenException(`Refresh token is expired`);
-    return refreshToken;
+    return tokens;
   }
 
-  async login(user: any) {
+  async login(user: any): Promise<CredentialsDto> {
     const payload = { username: user.username, sub: user.userId };
 
     const accessToken = this.jwtService.sign(
@@ -51,10 +52,7 @@ export class AuthService {
     this.expiredRefreshTokens.add(refreshToken);
   }
 
-  async setAuthCookies(
-    res: ResponseType,
-    tokens: { accessToken; refreshToken },
-  ) {
+  async setAuthCookies(res: ResponseType, tokens: CredentialsDto) {
     res.cookie(`accessToken`, tokens.accessToken, httponlyCookieOptions);
     res.cookie(`refreshToken`, tokens.refreshToken, httponlyCookieOptions);
   }

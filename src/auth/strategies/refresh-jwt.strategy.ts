@@ -28,7 +28,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   async validate(req: RequestType, payload: any) {
-    const refreshToken = await this.authService.validateRefresh(
+    await this.authService.validateRefresh(
       RefreshJwtStrategy.extractJwtFromCookies(req),
     );
     const user = await this.userService.findOne(payload.username);
