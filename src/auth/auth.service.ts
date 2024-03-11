@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Response as ResponseType } from 'express';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
 
 @Injectable()
 export class AuthService {
+  private expiredRefreshTokens: Set<string> = new Set();
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -22,14 +26,37 @@ export class AuthService {
     return null;
   }
 
+  async validateRefresh(refreshToken: string) {
+    if (this.expiredRefreshTokens.has(refreshToken))
+      throw new ForbiddenException(`Refresh token is expired`);
+    return refreshToken;
+  }
+
   async login(user: any) {
     const payload = { username: user.username, sub: user.userId };
 
-    return {
-      access: this.jwtService.sign(
-        payload,
-        this.configService.get(`jwt.access`),
-      ),
-    };
+    const accessToken = this.jwtService.sign(
+      payload,
+      this.configService.get(`jwt.access`),
+    );
+    const refreshToken = this.jwtService.sign(
+      payload,
+      this.configService.get(`jwt.refresh`),
+    );
+
+    return { accessToken, refreshToken };
+  }
+
+  async setAuthCookies(
+    res: ResponseType,
+    tokens: { accessToken; refreshToken },
+  ) {
+    res.cookie(`accessToken`, tokens.accessToken, httponlyCookieOptions);
+    res.cookie(`refreshToken`, tokens.refreshToken, httponlyCookieOptions);
+  }
+
+  async deleteAuthCookie(res, tokens: { accessToken; refreshToken }) {
+    res.clearCookie('refreshToken', httponlyCookieOptions);
+    res.clearCookie('accessToken', httponlyCookieOptions);
   }
 }
