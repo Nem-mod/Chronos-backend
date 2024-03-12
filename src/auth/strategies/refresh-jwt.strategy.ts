@@ -5,6 +5,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
 import { Request as RequestType } from 'express';
 import { AuthService } from '../auth.service';
+import { JwtPayloadDto } from '../dto/jwt-payload.dto';
+import { FullUserDto } from '../../user/dto/full-user.dto';
 
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(
@@ -27,11 +29,14 @@ export class RefreshJwtStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: RequestType, payload: any) {
+  async validate(
+    req: RequestType,
+    payload: JwtPayloadDto,
+  ): Promise<FullUserDto> {
     await this.authService.validateRefresh(
       RefreshJwtStrategy.extractJwtFromCookies(req),
     );
-    const user = await this.userService.findByUsername(payload.username);
+    const user = await this.userService.findById(payload.sub);
 
     if (!user) throw new UnauthorizedException();
 

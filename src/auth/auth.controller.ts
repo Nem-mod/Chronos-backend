@@ -7,6 +7,8 @@ import {
   Response,
   HttpCode,
   Body,
+  Delete,
+  Res,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { LocalAuthGuard } from './guard/local-auth.guard';
@@ -48,7 +50,7 @@ export class AuthController {
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ): Promise<void> {
-    await this.authService.logout(req.cookies.refreshToken);
+    await this.authService.logout(req.cookies);
     await this.authService.deleteAuthCookie(res);
   }
 
@@ -56,5 +58,16 @@ export class AuthController {
   @Get(`profile`)
   async getProfile(@Request() req: RequestType) {
     return req.user;
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
+  @HttpCode(204)
+  @Delete(`profile`)
+  async removeProfile(
+    @Request() req: RequestType,
+    @Response({ passthrough: true }) res: ResponseType,
+  ) {
+    await this.authService.removeProfile(req.user);
+    await this.authService.deleteAuthCookie(res);
   }
 }

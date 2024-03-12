@@ -8,6 +8,7 @@ import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
 import { CredentialsDto } from './dto/credentials.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
+import { JwtPayloadDto } from './dto/jwt-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,8 +21,8 @@ export class AuthService {
   ) {}
 
   async validateUser(
-    username: string,
-    pass: string,
+    username: CreateUserDto[`username`],
+    pass: CreateUserDto[`password`],
   ): Promise<FullUserDto | null> {
     const user = await this.userService.findByUsername(username);
 
@@ -42,8 +43,8 @@ export class AuthService {
     return await this.userService.create(user);
   }
 
-  async login(user: any): Promise<CredentialsDto> {
-    const payload = { username: user.username, sub: user.userId };
+  async login(user: FullUserDto): Promise<CredentialsDto> {
+    const payload: JwtPayloadDto = { username: user.username, sub: user._id };
 
     const accessToken = this.jwtService.sign(
       payload,
@@ -57,8 +58,8 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async logout(refreshToken: string) {
-    this.expiredRefreshTokens.add(refreshToken);
+  async logout(tokens: CredentialsDto) {
+    this.expiredRefreshTokens.add(tokens.refreshToken);
   }
 
   async setAuthCookies(res: ResponseType, tokens: CredentialsDto) {
@@ -66,8 +67,12 @@ export class AuthService {
     res.cookie(`refreshToken`, tokens.refreshToken, httponlyCookieOptions);
   }
 
-  async deleteAuthCookie(res) {
+  async deleteAuthCookie(res: ResponseType) {
     res.clearCookie('refreshToken');
     res.clearCookie('accessToken');
+  }
+
+  async removeProfile(user: FullUserDto): Promise<FullUserDto> {
+    return await this.userService.remove(user._id);
   }
 }

@@ -6,8 +6,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './models/user.model';
 import { Model } from 'mongoose';
 import { FullUserDto } from './dto/full-user.dto';
-import ErrorCodes from 'mongoose';
-import * as mongoose from 'mongoose';
 
 @Injectable()
 export class UserService {
@@ -38,11 +36,15 @@ export class UserService {
 
   async findByUsername(
     username: CreateUserDto[`username`],
-  ): Promise<FullUserDto | undefined> {
+  ): Promise<FullUserDto | null> {
     return this.userModel.findOne({ username }).lean();
   }
 
-  async findById(id: string): Promise<FullUserDto | undefined> {
-    return this.userModel.findById(id);
+  async findById(id: CreateUserDto[`_id`]): Promise<FullUserDto | null> {
+    return this.userModel.findById(id).lean();
+  }
+
+  async remove(id: CreateUserDto[`_id`]): Promise<FullUserDto> {
+    return this.userModel.findByIdAndDelete(id);
   }
 }
