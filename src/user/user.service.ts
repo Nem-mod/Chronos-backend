@@ -7,11 +7,13 @@ import { User } from './models/user.model';
 import { Model } from 'mongoose';
 import { FullUserDto } from './dto/full-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SendGridService } from '@anchan828/nest-sendgrid';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly configService: ConfigService,
+    private readonly sendGridService: SendGridService,
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
@@ -33,6 +35,17 @@ export class UserService {
     }
 
     return newUser;
+  }
+
+  async sendVerifyEmail(user: FullUserDto, returnUrl: string) {
+    await this.sendGridService.send({
+      to: user.email,
+      from: this.configService.get(`api.sendgrid.sender`),
+      dynamicTemplateData: {
+        link: returnUrl,
+      },
+      templateId: this.configService.get(`api.sendgrid.verify-template`),
+    });
   }
 
   async findByUsername(
@@ -63,6 +76,10 @@ export class UserService {
       console.error(err);
       throw err;
     }
+  }
+
+  async verify(id: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, { verified: true });
   }
 
   async remove(id: CreateUserDto[`_id`]): Promise<FullUserDto> {

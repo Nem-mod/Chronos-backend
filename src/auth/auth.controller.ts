@@ -10,6 +10,9 @@ import {
   Delete,
   Res,
   Patch,
+  Query,
+  Param,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { LocalAuthGuard } from './guard/local-auth.guard';
@@ -19,17 +22,44 @@ import { RefreshJwtAuthGuard } from './guard/refresh-jwt-auth.guard';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
+import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
+import { TokenDto } from './dto/token.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller({
   path: `auth`,
   version: `1`,
 })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post(`register`)
   async register(@Body() user: CreateUserDto): Promise<FullUserDto> {
     return await this.authService.register(user);
+  }
+
+  @HttpCode(204)
+  @Post(`verify/send-code`)
+  async sendVerify(@Body() linkInfo: SendVerifyLinkDto) {
+    await this.authService.sendVerifyEmail(linkInfo);
+  }
+
+  @Patch(`verify/validate-code`)
+  async verifyVerify(@Query(`token`) token: string) {
+    await this.authService.validateVerifyEmail(token);
+  }
+
+  @Get(`verify/validate-code`)
+  async verifyVerifyFromGet(@Query(`token`) token: string) {
+    if (this.configService.get(`stage`) !== `develop`)
+      throw new ForbiddenException(
+        `This endpoint with GET method is only for development. Use PATCH`,
+      );
+
+    await this.authService.validateVerifyEmail(token);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -37,7 +67,7 @@ export class AuthController {
   async login(
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
-  ) {
+  ): Promise<FullUserDto> {
     const tokens = await this.authService.login(req.user);
 
     await this.authService.setAuthCookies(res, tokens);

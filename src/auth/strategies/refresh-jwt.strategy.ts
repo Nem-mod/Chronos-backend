@@ -37,7 +37,6 @@ export class RefreshJwtStrategy extends PassportStrategy(
       RefreshJwtStrategy.extractJwtFromCookies(req),
     );
     const user = await this.userService.findById(payload.sub);
-
     if (!user) throw new UnauthorizedException();
 
     return user;
