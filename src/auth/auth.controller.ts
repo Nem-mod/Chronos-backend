@@ -9,6 +9,7 @@ import {
   Body,
   Delete,
   Res,
+  Patch,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { LocalAuthGuard } from './guard/local-auth.guard';
@@ -17,6 +18,7 @@ import { AccessJwtAuthGuard } from './guard/access-jwt-auth.guard';
 import { RefreshJwtAuthGuard } from './guard/refresh-jwt-auth.guard';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 
 @Controller({
   path: `auth`,
@@ -56,8 +58,17 @@ export class AuthController {
 
   @UseGuards(AccessJwtAuthGuard)
   @Get(`profile`)
-  async getProfile(@Request() req: RequestType) {
+  async getProfile(@Request() req: RequestType): Promise<FullUserDto> {
     return req.user;
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
+  @Patch(`profile`)
+  async editUser(
+    @Request() req: RequestType,
+    @Body() user: UpdateUserDto,
+  ): Promise<FullUserDto> {
+    return await this.authService.editProfile(req.user, user);
   }
 
   @UseGuards(AccessJwtAuthGuard)

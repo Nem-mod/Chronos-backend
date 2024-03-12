@@ -9,6 +9,7 @@ import { CredentialsDto } from './dto/credentials.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -70,6 +71,13 @@ export class AuthService {
   async deleteAuthCookie(res: ResponseType) {
     res.clearCookie('refreshToken');
     res.clearCookie('accessToken');
+  }
+
+  async editProfile(
+    currentUser: FullUserDto,
+    user: UpdateUserDto,
+  ): Promise<FullUserDto> {
+    return this.userService.update(currentUser._id, user);
   }
 
   async removeProfile(user: FullUserDto): Promise<FullUserDto> {

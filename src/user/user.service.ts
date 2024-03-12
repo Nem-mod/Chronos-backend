@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './models/user.model';
 import { Model } from 'mongoose';
 import { FullUserDto } from './dto/full-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -42,6 +43,26 @@ export class UserService {
 
   async findById(id: CreateUserDto[`_id`]): Promise<FullUserDto | null> {
     return this.userModel.findById(id).lean();
+  }
+
+  async update(
+    id: CreateUserDto[`_id`],
+    user: UpdateUserDto,
+  ): Promise<FullUserDto> {
+    delete user.password;
+    delete user._id;
+
+    try {
+      return await this.userModel.findByIdAndUpdate(id, user, {
+        new: true,
+        projection: { password: 0 },
+      });
+    } catch (err) {
+      if (err.code === 11000)
+        throw new ConflictException(`Some fields are already in use`);
+      console.error(err);
+      throw err;
+    }
   }
 
   async remove(id: CreateUserDto[`_id`]): Promise<FullUserDto> {
