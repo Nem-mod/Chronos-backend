@@ -1,0 +1,18 @@
+http:
+  host:
+  post:
+
+db:
+  mongodb:
+    uri:
+
+crypt:
+  salt:
+
+jwt:
+  access:
+    secret:
+    expiresIn:
+  refresh:
+    secret:
+    expiresIn:
