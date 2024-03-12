@@ -14,6 +14,11 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({
+    credentials: true,
+    origin: true,
+  });
+
   app.enableVersioning({
     type: VersioningType.URI,
   });

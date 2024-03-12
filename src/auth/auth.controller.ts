@@ -6,12 +6,15 @@ import {
   Get,
   Response,
   HttpCode,
+  Body,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { AuthService } from './auth.service';
 import { AccessJwtAuthGuard } from './guard/access-jwt-auth.guard';
 import { RefreshJwtAuthGuard } from './guard/refresh-jwt-auth.guard';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { FullUserDto } from '../user/dto/full-user.dto';
 
 @Controller({
   path: `auth`,
@@ -19,6 +22,11 @@ import { RefreshJwtAuthGuard } from './guard/refresh-jwt-auth.guard';
 })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post(`register`)
+  async register(@Body() user: CreateUserDto): Promise<FullUserDto> {
+    return await this.authService.register(user);
+  }
 
   @UseGuards(LocalAuthGuard)
   @Post(`login`)

@@ -5,8 +5,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EventModule } from './event/event.module';
 import { CalendarModule } from './calendar/calendar.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -17,6 +18,12 @@ import configuration from './config/configuration';
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get(`db.mongodb.uri`),
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],

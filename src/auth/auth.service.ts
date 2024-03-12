@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
 import { CredentialsDto } from './dto/credentials.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { FullUserDto } from '../user/dto/full-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +19,11 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, pass: string) {
-    const user = await this.userService.findOne(username);
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<FullUserDto | null> {
+    const user = await this.userService.findByUsername(username);
 
     if (user && (await bcrypt.compareSync(pass, user.password))) {
       const { password, ...result } = user;
@@ -31,6 +36,10 @@ export class AuthService {
     if (this.expiredRefreshTokens.has(tokens.refreshToken))
       throw new ForbiddenException(`Refresh token is expired`);
     return tokens;
+  }
+
+  async register(user: CreateUserDto): Promise<FullUserDto> {
+    return await this.userService.create(user);
   }
 
   async login(user: any): Promise<CredentialsDto> {
