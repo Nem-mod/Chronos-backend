@@ -5,7 +5,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
 import { Request as RequestType } from 'express';
 import { JwtPayloadDto } from '../dto/jwt-payload.dto';
-import { FullUserDto } from '../../user/dto/full-user.dto';
+import { FullUserDto } from '../../user/dto/user/full-user.dto';
 
 @Injectable()
 export class AccessJwtStrategy extends PassportStrategy(Strategy, `accessJwt`) {

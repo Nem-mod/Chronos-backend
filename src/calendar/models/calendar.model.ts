@@ -2,13 +2,14 @@ import mongoose, { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Timezone } from './settings/timezone.model';
 import { Ownership } from '../../user/models/ownership.model';
+import { IsOptional, IsString } from 'class-validator';
 
 @Schema()
 export class Calendar extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ default: null })
   description: string;
 
   @Prop({
@@ -20,7 +21,6 @@ export class Calendar extends Document {
 
   @Prop({
     type: Ownership,
-    required: true,
   })
   users: Ownership;
 }

@@ -1,12 +1,12 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/user/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './models/user.model';
 import { Model } from 'mongoose';
-import { FullUserDto } from './dto/full-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { FullUserDto } from './dto/user/full-user.dto';
+import { UpdateUserDto } from './dto/user/update-user.dto';
 import { SendGridService } from '@anchan828/nest-sendgrid';
 
 @Injectable()

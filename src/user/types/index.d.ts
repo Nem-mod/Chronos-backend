@@ -1,4 +1,4 @@
-import { FullUserDto } from '../dto/full-user.dto';
+import { FullUserDto } from '../dto/user/full-user.dto';
 import { Request } from 'express';
 
 declare global {
