@@ -8,6 +8,7 @@ import { CalendarModule } from './calendar/calendar.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { MongooseModule } from '@nestjs/mongoose';
+import { OwnershipModule } from './ownership/ownership.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       }),
       inject: [ConfigService],
     }),
+    OwnershipModule,
   ],
   controllers: [AppController],
   providers: [AppService],

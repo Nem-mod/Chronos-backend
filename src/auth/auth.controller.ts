@@ -25,6 +25,7 @@ import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
 import { TokenDto } from './dto/token.dto';
 import { ConfigService } from '@nestjs/config';
+import timezones from 'timezones-list';
 
 @Controller({
   path: `auth`,
@@ -68,6 +69,7 @@ export class AuthController {
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ): Promise<FullUserDto> {
+    console.log(timezones);
     const tokens = await this.authService.login(req.user);
 
     await this.authService.setAuthCookies(res, tokens);
