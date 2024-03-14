@@ -1,7 +1,7 @@
 import { Prop } from '@nestjs/mongoose';
 import { IsBoolean, IsHexColor, IsOptional, IsString } from 'class-validator';
 
-export class VisibilitySettingDto {
+export class VisibilitySettingsDto {
   @IsOptional()
   @IsBoolean()
   isVisible: boolean;

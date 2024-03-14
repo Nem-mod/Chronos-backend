@@ -1,6 +1,6 @@
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class RemindSettingDto {
+export class RemindSettingsDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })

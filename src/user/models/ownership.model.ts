@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { User } from './user.model';
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 @Schema()
 export class Ownership extends Document {

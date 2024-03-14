@@ -49,12 +49,12 @@ export class AuthController {
   }
 
   @Patch(`verify/validate-code`)
-  async verifyVerify(@Query(`token`) token: string) {
+  async validateVerify(@Query(`token`) token: string) {
     await this.authService.validateVerifyEmail(token);
   }
 
   @Get(`verify/validate-code`)
-  async verifyVerifyFromGet(@Query(`token`) token: string) {
+  async validateVerifyFromGet(@Query(`token`) token: string) {
     if (this.configService.get(`stage`) !== `develop`)
       throw new ForbiddenException(
         `This endpoint with GET method is only for development. Use PATCH`,
@@ -69,7 +69,6 @@ export class AuthController {
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ): Promise<FullUserDto> {
-    console.log(timezones);
     const tokens = await this.authService.login(req.user);
 
     await this.authService.setAuthCookies(res, tokens);

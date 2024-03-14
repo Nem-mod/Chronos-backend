@@ -1,6 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 import { User } from '../../user/models/user.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { CalendarEntry } from './calendar-entry.model';
 
 @Schema()
 export class CalendarList extends Document {
@@ -8,11 +9,15 @@ export class CalendarList extends Document {
     type: mongoose.Schema.Types.ObjectId,
     ref: User.name,
     required: true,
+    unique: true,
   })
   userId: User;
 
-  // @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: `CalendarEntry` }], default: [] })
-  // calendars: CalendarEntry
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: CalendarEntry.name }],
+    default: [],
+  })
+  calendars: CalendarEntry[];
 }
 
 export const CalendarListSchema = SchemaFactory.createForClass(CalendarList);

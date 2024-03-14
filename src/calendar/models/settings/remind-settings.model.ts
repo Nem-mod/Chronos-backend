@@ -2,9 +2,9 @@ import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
-export class RemindSetting extends Document {
+export class RemindSettings extends Document {
   @Prop({ type: [Number], default: [] })
   secondsBefore: number[];
 }
 
-export const RemindSettingSchema = SchemaFactory.createForClass(RemindSetting);
+export const RemindSettingSchema = SchemaFactory.createForClass(RemindSettings);

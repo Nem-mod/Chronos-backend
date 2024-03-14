@@ -4,6 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './models/user.model';
 import { SendGridModule } from '@anchan828/nest-sendgrid';
 import { ConfigService } from '@nestjs/config';
+import { OwnershipService } from './ownership.service';
+import { Ownership, OwnershipSchema } from './models/ownership.model';
 
 @Module({
   imports: [
@@ -13,9 +15,12 @@ import { ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Ownership.name, schema: OwnershipSchema },
+    ]),
   ],
-  providers: [UserService],
-  exports: [UserService],
+  providers: [UserService, OwnershipService],
+  exports: [UserService, OwnershipService],
 })
 export class UserModule {}

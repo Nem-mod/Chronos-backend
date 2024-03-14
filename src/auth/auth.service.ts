@@ -19,6 +19,7 @@ import { UpdateUserDto } from '../user/dto/user/update-user.dto';
 import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
 import { listenForManualRestart } from '@nestjs/cli/lib/compiler/helpers/manual-restart';
 import { TokenDto } from './dto/token.dto';
+import { CalendarService } from '../calendar/calendar.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
+    private readonly calendarService: CalendarService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -50,7 +52,12 @@ export class AuthService {
   }
 
   async register(user: CreateUserDto): Promise<FullUserDto> {
-    return await this.userService.create(user);
+    const newUser = await this.userService.create(user);
+    const newCalendarList = await this.calendarService.createCalendarList({
+      userId: newUser._id,
+    });
+
+    return newUser;
   }
 
   async sendVerifyEmail(linkInfo: SendVerifyLinkDto): Promise<void> {

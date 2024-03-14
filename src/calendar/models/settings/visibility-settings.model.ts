@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
-export class VisibilitySetting extends Document {
+export class VisibilitySettings extends Document {
   @Prop({ default: true })
   isVisible: boolean;
 
@@ -14,4 +14,4 @@ export class VisibilitySetting extends Document {
 }
 
 export const VisibilitySettingSchema =
-  SchemaFactory.createForClass(VisibilitySetting);
+  SchemaFactory.createForClass(VisibilitySettings);
