@@ -13,7 +13,7 @@ export class Calendar extends Document {
   description: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: Timezone.name,
     required: true,
   })
@@ -21,6 +21,7 @@ export class Calendar extends Document {
 
   @Prop({
     type: Ownership,
+    required: true,
   })
   users: Ownership;
 }

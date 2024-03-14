@@ -23,7 +23,7 @@ export class UserService {
       this.configService.get<number>(`crypt.salt`),
     );
 
-    const newUser = new this.userModel(user);
+    const newUser: User = new this.userModel(user);
 
     try {
       await newUser.save();
@@ -37,7 +37,7 @@ export class UserService {
     return newUser;
   }
 
-  async sendVerifyEmail(user: FullUserDto, returnUrl: string) {
+  async sendVerifyEmail(user: FullUserDto, returnUrl: string): Promise<void> {
     await this.sendGridService.send({
       to: user.email,
       from: this.configService.get(`api.sendgrid.sender`),
@@ -50,11 +50,11 @@ export class UserService {
 
   async findByUsername(
     username: CreateUserDto[`username`],
-  ): Promise<FullUserDto | null> {
+  ): Promise<User | null> {
     return this.userModel.findOne({ username }).lean();
   }
 
-  async findById(id: CreateUserDto[`_id`]): Promise<FullUserDto | null> {
+  async findById(id: CreateUserDto[`_id`]): Promise<User | null> {
     return this.userModel.findById(id).lean();
   }
 

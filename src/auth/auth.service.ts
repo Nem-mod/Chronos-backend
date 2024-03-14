@@ -54,7 +54,7 @@ export class AuthService {
   async register(user: CreateUserDto): Promise<FullUserDto> {
     const newUser = await this.userService.create(user);
     const newCalendarList = await this.calendarService.createCalendarList({
-      userId: newUser._id,
+      _id: newUser._id,
     });
 
     return newUser;

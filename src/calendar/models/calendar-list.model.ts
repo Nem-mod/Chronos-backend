@@ -8,10 +8,8 @@ export class CalendarList extends Document {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: User.name,
-    required: true,
-    unique: true,
   })
-  userId: User;
+  _id: User;
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: CalendarEntry.name }],

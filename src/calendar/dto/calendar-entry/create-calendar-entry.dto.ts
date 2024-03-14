@@ -15,7 +15,7 @@ import { VisibilitySettingsDto } from '../settings/visibility-settings.dto';
 export class CreateCalendarEntryDto {
   @IsOptional()
   @IsString()
-  _id: string;
+  _id?: string;
 
   @IsDefined()
   @IsString()
@@ -24,11 +24,11 @@ export class CreateCalendarEntryDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => RemindSettingsDto)
-  remindSetting: RemindSettingsDto;
+  remindSetting?: RemindSettingsDto = null;
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => VisibilitySettingsDto)
-  visibilitySetting: VisibilitySettingsDto;
+  visibilitySetting?: VisibilitySettingsDto = null;
   // TODO: create ownership manipulation functions in userService, work on calendarService, create refreshToken endpoint
 }

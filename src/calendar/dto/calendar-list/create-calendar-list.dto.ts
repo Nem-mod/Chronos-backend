@@ -9,11 +9,7 @@ import { CreateCalendarEntryDto } from '../calendar-entry/create-calendar-entry.
 import { IsDefined, IsOptional, IsString } from 'class-validator';
 
 export class CreateCalendarListDto {
-  @IsOptional()
-  @IsString()
-  _id?: string;
-
   @IsDefined()
   @IsString()
-  userId: FullUserDto | CreateUserDto[`_id`];
+  _id?: FullUserDto | CreateUserDto[`_id`];
 }

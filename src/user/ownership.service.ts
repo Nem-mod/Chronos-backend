@@ -37,5 +37,10 @@ export class OwnershipService {
     return null;
   }
 
+  async createOwnershipModel(ownership: OwnershipDto): Promise<Ownership> {
+    const newOwnership: Ownership = new this.ownershipModel(ownership);
+    return newOwnership;
+  }
+
   // async addOwner(ownership: OwnershipDto, userId: CreateUserDto[`_id`]) {}
 }
