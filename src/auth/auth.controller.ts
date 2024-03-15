@@ -105,11 +105,13 @@ export class AuthController {
   @UseGuards(AccessJwtAuthGuard)
   @HttpCode(204)
   @Delete(`profile`)
-  async removeProfile(
+  async deleteProfile(
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ) {
-    await this.authService.removeProfile(req.user);
+    await this.authService.deleteProfile(req.user); // TODO: unsubscribe from all events on account deletion
     await this.authService.deleteAuthCookie(res);
   }
+
+  // TODO: create refreshToken endpoint
 }

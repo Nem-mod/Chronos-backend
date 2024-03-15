@@ -30,5 +30,4 @@ export class CreateCalendarEntryDto {
   @ValidateNested({ each: true })
   @Type(() => VisibilitySettingsDto)
   visibilitySettings?: VisibilitySettingsDto = null;
-  // TODO: create ownership manipulation functions in userService, work on calendarService, create refreshToken endpoint
 }

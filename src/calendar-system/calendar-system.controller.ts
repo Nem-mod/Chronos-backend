@@ -27,9 +27,7 @@ export class CalendarSystemController {
   constructor(
     private readonly configService: ConfigService,
     private readonly timezoneService: TimezonesService,
-    private readonly calendarService: CalendarService,
     private readonly calendarSystemService: CalendarSystemService,
-    private readonly calendarListService: CalendarListService,
   ) {}
 
   @HttpCode(204)

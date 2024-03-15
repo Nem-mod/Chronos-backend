@@ -128,7 +128,7 @@ export class AuthService {
     return this.userService.update(currentUser._id, user);
   }
 
-  async removeProfile(user: FullUserDto): Promise<FullUserDto> {
+  async deleteProfile(user: FullUserDto): Promise<FullUserDto> {
     return await this.userService.remove(user._id);
   }
 }
