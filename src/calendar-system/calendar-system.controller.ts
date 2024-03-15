@@ -14,6 +14,7 @@ import { FullCalendarDto } from './calendar/dto/full-calendar.dto';
 import { AccessJwtAuthGuard } from '../auth/guard/access-jwt-auth.guard';
 import { Request as RequestType } from 'express';
 import { TimezonesService } from './calendar/timezone/timezones.service';
+import { CalendarSystemService } from './calendar-system.service';
 
 @Controller({
   path: `calendar`,
@@ -24,6 +25,7 @@ export class CalendarSystemController {
     private readonly configService: ConfigService,
     private readonly timezoneService: TimezonesService,
     private readonly calendarService: CalendarService,
+    private readonly calendarSystemService: CalendarSystemService,
   ) {}
 
   @HttpCode(204)
@@ -40,6 +42,9 @@ export class CalendarSystemController {
     @Request() req: RequestType,
     @Body() calendar: CreateCalendarDto,
   ): Promise<FullCalendarDto> {
-    return await this.calendarService.createCalendar(calendar, req.user);
+    return await this.calendarSystemService.createOwnCalendar(
+      calendar,
+      req.user,
+    );
   }
 }

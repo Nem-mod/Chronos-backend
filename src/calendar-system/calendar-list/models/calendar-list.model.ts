@@ -15,7 +15,7 @@ export class CalendarList extends Document {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: CalendarEntry.name }],
     default: [],
   })
-  calendars: CalendarEntry[];
+  calendarEntries: CalendarEntry[];
 }
 
 export const CalendarListSchema = SchemaFactory.createForClass(CalendarList);

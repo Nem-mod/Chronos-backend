@@ -6,7 +6,7 @@ import { UserService } from '../../user/user.service';
 import { Request as RequestType } from 'express';
 import { AuthService } from '../auth.service';
 import { JwtPayloadDto } from '../dto/jwt-payload.dto';
-import { FullUserDto } from '../../user/dto/user/full-user.dto';
+import { FullUserDto } from '../../user/dto/full-user.dto';
 
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(

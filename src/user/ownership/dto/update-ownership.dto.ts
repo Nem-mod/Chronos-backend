@@ -1,4 +1,4 @@
-import { CreateUserDto } from '../user/create-user.dto';
+import { CreateUserDto } from '../../dto/create-user.dto';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class UpdateOwnershipDto {

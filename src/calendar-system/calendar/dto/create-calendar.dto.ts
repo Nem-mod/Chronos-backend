@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { TimezonteDto } from '../timezone/dto/timezonte.dto';
-import { OwnershipDto } from '../../../user/dto/ownership/ownership.dto';
+import { OwnershipDto } from '../../../user/ownership/dto/ownership.dto';
 import { Type } from 'class-transformer';
 
 export class CreateCalendarDto {

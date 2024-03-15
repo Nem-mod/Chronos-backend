@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from '../user.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ownership } from './models/ownership.model';
 import { Model } from 'mongoose';
-import { OwnershipDto } from './dto/ownership/ownership.dto';
-import { CreateUserDto } from './dto/user/create-user.dto';
+import { OwnershipDto } from './dto/ownership.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 
 @Injectable()
 export class OwnershipService {

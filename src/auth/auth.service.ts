@@ -12,13 +12,14 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
 import { CredentialsDto } from './dto/credentials.dto';
-import { CreateUserDto } from '../user/dto/user/create-user.dto';
-import { FullUserDto } from '../user/dto/user/full-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { FullUserDto } from '../user/dto/full-user.dto';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
-import { UpdateUserDto } from '../user/dto/user/update-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
 import { TokenDto } from './dto/token.dto';
 import { CalendarService } from '../calendar-system/calendar/calendar.service';
+import { CalendarSystemService } from '../calendar-system/calendar-system.service';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
-    private readonly calendarService: CalendarService,
+    private readonly calendarSystemService: CalendarSystemService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -52,9 +53,8 @@ export class AuthService {
 
   async register(user: CreateUserDto): Promise<FullUserDto> {
     const newUser = await this.userService.create(user);
-    const newCalendarList = await this.calendarService.createCalendarList({
-      _id: newUser._id,
-    });
+    const newCalendarList =
+      await this.calendarSystemService.initCalendarList(newUser);
 
     return newUser;
   }

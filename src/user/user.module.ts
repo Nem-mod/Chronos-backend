@@ -4,8 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './models/user.model';
 import { SendGridModule } from '@anchan828/nest-sendgrid';
 import { ConfigService } from '@nestjs/config';
-import { OwnershipService } from './ownership.service';
-import { Ownership, OwnershipSchema } from './models/ownership.model';
+import { OwnershipService } from './ownership/ownership.service';
+import { Ownership, OwnershipSchema } from './ownership/models/ownership.model';
 
 @Module({
   imports: [

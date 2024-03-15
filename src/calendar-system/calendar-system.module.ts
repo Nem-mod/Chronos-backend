@@ -3,10 +3,16 @@ import { CalendarSystemController } from './calendar-system.controller';
 import { CalendarService } from './calendar/calendar.service';
 import mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Timezone, TimezoneSchema } from './calendar/timezone/models/timezone.model';
+import {
+  Timezone,
+  TimezoneSchema,
+} from './calendar/timezone/models/timezone.model';
 import { UserModule } from '../user/user.module';
 import { Calendar, CalendarSchema } from './calendar/models/calendar.model';
-import { CalendarList, CalendarListSchema } from './calendar-list/models/calendar-list.model';
+import {
+  CalendarList,
+  CalendarListSchema,
+} from './calendar-list/models/calendar-list.model';
 import {
   CalendarEntry,
   CalendarEntrySchema,
@@ -24,6 +30,7 @@ import { VisibilitySettingsService } from './calendar-entry/visibility-settings/
 import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
+import { CalendarSystemService } from './calendar-system.service';
 
 @Module({
   imports: [
@@ -45,7 +52,8 @@ import { CalendarListService } from './calendar-list/calendar-list.service';
     TimezonesService,
     CalendarEntryService,
     CalendarListService,
+    CalendarSystemService,
   ],
-  exports: [CalendarService],
+  exports: [CalendarSystemService],
 })
 export class CalendarSystemModule {}
