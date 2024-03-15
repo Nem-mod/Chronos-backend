@@ -4,13 +4,13 @@ import { IsBoolean, IsHexColor, IsOptional, IsString } from 'class-validator';
 export class VisibilitySettingsDto {
   @IsOptional()
   @IsBoolean()
-  isVisible: boolean;
+  isVisible?: boolean;
 
   @IsOptional()
   @IsHexColor()
-  color: string;
+  color?: string;
 
   @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 }

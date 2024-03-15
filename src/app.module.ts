@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EventModule } from './event/event.module';
-import { CalendarModule } from './calendar/calendar.module';
+import { CalendarSystemModule } from './calendar-system/calendar-system.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -14,7 +14,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     UserModule,
     AuthModule,
     EventModule,
-    CalendarModule,
+    CalendarSystemModule,
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,

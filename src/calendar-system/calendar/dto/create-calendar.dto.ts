@@ -1,4 +1,4 @@
-import { Timezone } from '../../models/settings/timezone.model';
+import { Timezone } from '../timezone/models/timezone.model';
 import {
   IsArray,
   IsDefined,
@@ -8,7 +8,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { TimezonteDto } from '../settings/timezonte.dto';
+import { TimezonteDto } from '../timezone/dto/timezonte.dto';
 import { OwnershipDto } from '../../../user/dto/ownership/ownership.dto';
 import { Type } from 'class-transformer';
 

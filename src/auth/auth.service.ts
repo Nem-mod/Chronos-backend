@@ -17,9 +17,8 @@ import { FullUserDto } from '../user/dto/user/full-user.dto';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
 import { UpdateUserDto } from '../user/dto/user/update-user.dto';
 import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
-import { listenForManualRestart } from '@nestjs/cli/lib/compiler/helpers/manual-restart';
 import { TokenDto } from './dto/token.dto';
-import { CalendarService } from '../calendar/calendar.service';
+import { CalendarService } from '../calendar-system/calendar/calendar.service';
 
 @Injectable()
 export class AuthService {

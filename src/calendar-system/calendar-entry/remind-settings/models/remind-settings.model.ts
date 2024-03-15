@@ -7,4 +7,5 @@ export class RemindSettings extends Document {
   secondsBefore: number[];
 }
 
-export const RemindSettingSchema = SchemaFactory.createForClass(RemindSettings);
+export const RemindSettingsSchema =
+  SchemaFactory.createForClass(RemindSettings);

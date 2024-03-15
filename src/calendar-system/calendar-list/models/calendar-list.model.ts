@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
-import { User } from '../../user/models/user.model';
+import { User } from '../../../user/models/user.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { CalendarEntry } from './calendar-entry.model';
+import { CalendarEntry } from '../../calendar-entry/models/calendar-entry.model';
 
 @Schema()
 export class CalendarList extends Document {

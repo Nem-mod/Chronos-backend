@@ -1,7 +1,7 @@
-import { FullCalendarDto } from '../calendar/full-calendar.dto';
-import { CreateCalendarDto } from '../calendar/create-calendar.dto';
-import { RemindSettings } from '../../models/settings/remind-settings.model';
-import { VisibilitySettings } from '../../models/settings/visibility-settings.model';
+import { FullCalendarDto } from '../../calendar/dto/full-calendar.dto';
+import { CreateCalendarDto } from '../../calendar/dto/create-calendar.dto';
+import { RemindSettings } from '../remind-settings/models/remind-settings.model';
+import { VisibilitySettings } from '../visibility-settings/models/visibility-settings.model';
 import {
   IsDefined,
   IsOptional,
@@ -9,8 +9,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { RemindSettingsDto } from '../settings/remind-settings.dto';
-import { VisibilitySettingsDto } from '../settings/visibility-settings.dto';
+import { RemindSettingsDto } from '../remind-settings/dto/remind-settings.dto';
+import { VisibilitySettingsDto } from '../visibility-settings/dto/visibility-settings.dto';
 
 export class CreateCalendarEntryDto {
   @IsOptional()
@@ -24,11 +24,11 @@ export class CreateCalendarEntryDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => RemindSettingsDto)
-  remindSetting?: RemindSettingsDto = null;
+  remindSettings?: RemindSettingsDto = null;
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => VisibilitySettingsDto)
-  visibilitySetting?: VisibilitySettingsDto = null;
+  visibilitySettings?: VisibilitySettingsDto = null;
   // TODO: create ownership manipulation functions in userService, work on calendarService, create refreshToken endpoint
 }

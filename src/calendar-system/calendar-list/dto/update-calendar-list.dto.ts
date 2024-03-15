@@ -1,6 +1,6 @@
 import { IsDefined, IsOptional, IsString } from 'class-validator';
-import { FullCalendarEntryDto } from '../calendar-entry/full-calendar-entry.dto';
-import { CreateCalendarEntryDto } from '../calendar-entry/create-calendar-entry.dto';
+import { FullCalendarEntryDto } from '../../calendar-entry/dto/full-calendar-entry.dto';
+import { CreateCalendarEntryDto } from '../../calendar-entry/dto/create-calendar-entry.dto';
 import { PartialType } from '@nestjs/swagger';
 import { CreateCalendarListDto } from './create-calendar-list.dto';
 

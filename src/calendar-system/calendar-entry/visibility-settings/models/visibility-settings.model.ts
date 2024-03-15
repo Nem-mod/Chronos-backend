@@ -13,5 +13,5 @@ export class VisibilitySettings extends Document {
   name: string;
 }
 
-export const VisibilitySettingSchema =
+export const VisibilitySettingsSchema =
   SchemaFactory.createForClass(VisibilitySettings);

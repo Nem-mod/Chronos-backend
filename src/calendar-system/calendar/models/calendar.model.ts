@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Timezone } from './settings/timezone.model';
-import { Ownership } from '../../user/models/ownership.model';
+import { Timezone } from '../timezone/models/timezone.model';
+import { Ownership } from '../../../user/models/ownership.model';
 import { IsOptional, IsString } from 'class-validator';
 
 @Schema()

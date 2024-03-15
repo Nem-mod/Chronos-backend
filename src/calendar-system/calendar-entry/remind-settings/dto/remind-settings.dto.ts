@@ -4,5 +4,5 @@ export class RemindSettingsDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  secondsBefore: number[];
+  secondsBefore?: number[];
 }
