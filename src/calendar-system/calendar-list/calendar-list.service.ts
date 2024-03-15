@@ -15,6 +15,8 @@ import { FullCalendarEntryDto } from '../calendar-entry/dto/full-calendar-entry.
 import { CalendarEntry } from '../calendar-entry/models/calendar-entry.model';
 import { CalendarEntryService } from '../calendar-entry/calendar-entry.service';
 import { CreateCalendarEntryDto } from '../calendar-entry/dto/create-calendar-entry.dto';
+import { CreateUserDto } from '../../user/dto/create-user.dto';
+import { CalendarService } from '../calendar/calendar.service';
 
 @Injectable()
 export class CalendarListService {
@@ -45,33 +47,49 @@ export class CalendarListService {
     return newCalendarList;
   }
 
-  async findCalendarListByUser(user: FullUserDto): Promise<CalendarList> {
-    const calendarList: CalendarList = await this.calendarListModel.findById(
-      user._id,
-    );
+  async findCalendarListByUser(
+    userId: CreateUserDto[`_id`],
+  ): Promise<CalendarList> {
+    const calendarList: CalendarList =
+      await this.calendarListModel.findById(userId);
     if (!calendarList) throw new NotFoundException(`Calendar list not found`);
     return calendarList;
   }
 
   async addCalendarEntryToList(
     calendarEntry: FullCalendarEntryDto,
-    user: FullUserDto,
+    userId: CreateUserDto[`_id`],
   ) {
     await this.addCalendarEntriesToList(
       { calendarEntries: [calendarEntry] },
-      user,
+      userId,
     );
   }
 
   async addCalendarEntriesToList(
     calendarEntryIds: UpdateCalendarListDto,
-    user: FullUserDto,
+    userId: CreateUserDto[`_id`],
   ) {
-    const calendarList: CalendarList = await this.findCalendarListByUser(user);
+    const calendarList: CalendarList =
+      await this.findCalendarListByUser(userId);
 
     for (const calendarEntry of calendarEntryIds.calendarEntries) {
       calendarList.calendarEntries.push(calendarEntry as CalendarEntry);
     }
+    await calendarList.save();
+  }
+
+  async clearListFromTombstones(userId: CreateUserDto[`_id`]) {
+    const calendarList: CalendarList =
+      await this.findCalendarListByUser(userId);
+    const calendarListPopulated: CalendarList = await (
+      await this.findCalendarListByUser(userId)
+    ).populate({
+      path: `calendarEntries`,
+    });
+
+    calendarList.calendarEntries = calendarListPopulated.calendarEntries;
+
     await calendarList.save();
   }
 }

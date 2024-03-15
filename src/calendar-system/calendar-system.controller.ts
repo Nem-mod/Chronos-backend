@@ -17,6 +17,7 @@ import { Request as RequestType } from 'express';
 import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
+import { CalendarListService } from './calendar-list/calendar-list.service';
 
 @Controller({
   path: `calendar`,
@@ -28,6 +29,7 @@ export class CalendarSystemController {
     private readonly timezoneService: TimezonesService,
     private readonly calendarService: CalendarService,
     private readonly calendarSystemService: CalendarSystemService,
+    private readonly calendarListService: CalendarListService,
   ) {}
 
   @HttpCode(204)
@@ -46,11 +48,12 @@ export class CalendarSystemController {
   ): Promise<FullCalendarDto> {
     return await this.calendarSystemService.createOwnCalendar(
       calendar,
-      req.user,
+      req.user._id,
     );
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @HttpCode(204)
   @Delete()
   async deleteCalendar(@Request() req: RequestType) {
     await this.calendarSystemService.deleteCalendar(req.calendar._id);

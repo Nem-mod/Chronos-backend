@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ownership } from './models/ownership.model';
@@ -59,5 +59,16 @@ export class OwnershipService {
     return newOwnership;
   }
 
+  async getAllUsersIds(
+    ownership: OwnershipDto,
+  ): Promise<CreateUserDto[`_id`][]> {
+    return ownership.owners.concat(ownership.guests).map((user) => {
+      if (user instanceof FullUserDto) {
+        return user._id;
+      } else {
+        return user;
+      }
+    });
+  }
   // async addOwner(ownership: OwnershipDto, userId: CreateUserDto[`_id`]) {}
 }

@@ -11,6 +11,7 @@ import { Ownership } from '../../user/ownership/models/ownership.model';
 import { TimezonesService } from './timezone/timezones.service';
 import { CalendarEntryService } from '../calendar-entry/calendar-entry.service';
 import { CalendarListService } from '../calendar-list/calendar-list.service';
+import { CreateUserDto } from '../../user/dto/create-user.dto';
 
 @Injectable()
 export class CalendarService {
@@ -23,7 +24,7 @@ export class CalendarService {
 
   async create(
     calendar: CreateCalendarDto,
-    user: FullUserDto,
+    userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
     const timezone: Timezone = await this.timezonesService.findTimezoneByCode(
       calendar.timezone as string,
@@ -31,7 +32,7 @@ export class CalendarService {
     if (!timezone) throw new NotFoundException(`Timezone not found`);
 
     const users: Ownership = await this.ownershipService.createOwnershipModel({
-      owners: [user._id],
+      owners: [userId],
       guests: [],
     });
     const newCalendar: Calendar = new this.calendarModel({
@@ -50,12 +51,8 @@ export class CalendarService {
   }
 
   async delete(id: CreateCalendarDto[`_id`]): Promise<FullCalendarDto> {
-    try {
-      const calendar: Calendar = await this.calendarModel.findByIdAndDelete(id);
-      if (!calendar) throw new Error();
-      return calendar;
-    } catch (err) {
-      throw new NotFoundException(`Calendar not found`);
-    }
+    const calendar: Calendar = await this.calendarModel.findByIdAndDelete(id);
+    if (!calendar) throw new NotFoundException(`Calendar not found`);
+    return calendar;
   }
 }
