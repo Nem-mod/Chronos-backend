@@ -15,10 +15,10 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
-import { LocalAuthGuard } from './guard/local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { AccessJwtAuthGuard } from './guard/access-jwt-auth.guard';
-import { RefreshJwtAuthGuard } from './guard/refresh-jwt-auth.guard';
+import { AccessJwtAuthGuard } from './guards/access-jwt-auth.guard';
+import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
 import { UpdateUserDto } from '../user/dto/update-user.dto';

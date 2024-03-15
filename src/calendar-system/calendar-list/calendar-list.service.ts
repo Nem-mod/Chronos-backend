@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCalendarListDto } from './dto/create-calendar-list.dto';
 import { FullCalendarListDto } from './dto/full-calendar-list.dto';
 import { CalendarList } from './models/calendar-list.model';
@@ -42,7 +46,11 @@ export class CalendarListService {
   }
 
   async findCalendarListByUser(user: FullUserDto): Promise<CalendarList> {
-    return await this.calendarListModel.findById(user._id);
+    const calendarList: CalendarList = await this.calendarListModel.findById(
+      user._id,
+    );
+    if (!calendarList) throw new NotFoundException(`Calendar list not found`);
+    return calendarList;
   }
 
   async addCalendarEntryToList(

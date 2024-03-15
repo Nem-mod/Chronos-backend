@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -79,10 +83,15 @@ export class UserService {
   }
 
   async verify(id: string): Promise<void> {
-    await this.userModel.findByIdAndUpdate(id, { verified: true });
+    const user: User = await this.userModel.findByIdAndUpdate(id, {
+      verified: true,
+    });
+    if (!user) throw new NotFoundException(`User not found`);
   }
 
   async remove(id: CreateUserDto[`_id`]): Promise<FullUserDto> {
-    return this.userModel.findByIdAndDelete(id);
+    const user = this.userModel.findByIdAndDelete(id);
+    if (!user) throw new NotFoundException(`User not found`);
+    return user;
   }
 }

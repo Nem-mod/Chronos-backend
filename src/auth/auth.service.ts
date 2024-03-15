@@ -20,6 +20,7 @@ import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
 import { TokenDto } from './dto/token.dto';
 import { CalendarService } from '../calendar-system/calendar/calendar.service';
 import { CalendarSystemService } from '../calendar-system/calendar-system.service';
+import { User } from '../user/models/user.model';
 
 @Injectable()
 export class AuthService {
@@ -35,14 +36,16 @@ export class AuthService {
   async validateUser(
     username: CreateUserDto[`username`],
     pass: CreateUserDto[`password`],
-  ): Promise<FullUserDto | null> {
-    const user = await this.userService.findByUsername(username);
+  ): Promise<FullUserDto> {
+    try {
+      const user: User = await this.userService.findByUsername(username);
 
-    if (user && (await bcrypt.compareSync(pass, user.password))) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
+      if (user && (await bcrypt.compareSync(pass, user.password))) {
+        const { password, ...result } = user;
+        return result;
+      }
+    } catch (err) {}
+    throw new UnauthorizedException();
   }
 
   async validateRefresh(tokens: CredentialsDto): Promise<CredentialsDto> {
@@ -52,16 +55,14 @@ export class AuthService {
   }
 
   async register(user: CreateUserDto): Promise<FullUserDto> {
-    const newUser = await this.userService.create(user);
-    const newCalendarList =
-      await this.calendarSystemService.initCalendarList(newUser);
+    const newUser: FullUserDto = await this.userService.create(user);
+    await this.calendarSystemService.initCalendarList(newUser);
 
     return newUser;
   }
 
   async sendVerifyEmail(linkInfo: SendVerifyLinkDto): Promise<void> {
-    const user = await this.userService.findByUsername(linkInfo.username);
-    if (!user) throw new NotFoundException(`User not found`);
+    const user: User = await this.userService.findByUsername(linkInfo.username);
     if (user.verified) throw new ForbiddenException(`User already verified`);
 
     const payload: JwtPayloadDto = { username: user.username, sub: user._id };
@@ -85,12 +86,7 @@ export class AuthService {
       throw new BadRequestException(`Token is invalid`);
     }
 
-    try {
-      await this.userService.verify(payload.sub);
-    } catch (err) {
-      console.error(err);
-      throw new UnauthorizedException();
-    }
+    await this.userService.verify(payload.sub);
   }
 
   async login(user: FullUserDto): Promise<CredentialsDto> {

@@ -19,11 +19,9 @@ export class CalendarService {
 
     private readonly ownershipService: OwnershipService,
     private readonly timezonesService: TimezonesService,
-    private readonly calendarEntryService: CalendarEntryService,
-    private readonly calendarListService: CalendarListService,
   ) {}
 
-  async createCalendar(
+  async create(
     calendar: CreateCalendarDto,
     user: FullUserDto,
   ): Promise<FullCalendarDto> {
@@ -43,5 +41,21 @@ export class CalendarService {
     await newCalendar.save();
 
     return newCalendar;
+  }
+
+  async findById(id: CreateCalendarDto[`_id`]): Promise<Calendar> {
+    const calendar: Calendar = await this.calendarModel.findById(id);
+    if (!calendar) throw new NotFoundException(`Calendar not found`);
+    return calendar;
+  }
+
+  async delete(id: CreateCalendarDto[`_id`]): Promise<FullCalendarDto> {
+    try {
+      const calendar: Calendar = await this.calendarModel.findByIdAndDelete(id);
+      if (!calendar) throw new Error();
+      return calendar;
+    } catch (err) {
+      throw new NotFoundException(`Calendar not found`);
+    }
   }
 }

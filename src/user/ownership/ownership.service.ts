@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '../user.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ownership } from './models/ownership.model';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { OwnershipDto } from './dto/ownership.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { FullUserDto } from '../dto/full-user.dto';
 
 @Injectable()
 export class OwnershipService {
@@ -18,14 +19,30 @@ export class OwnershipService {
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<boolean> {
-    return ownership.owners.includes(userId);
+    return ownership.owners.some((obj) => {
+      let id: string;
+      if (obj instanceof FullUserDto) {
+        id = obj._id.toString();
+      } else {
+        id = obj.toString();
+      }
+      return id === userId.toString();
+    });
   }
 
   async isGuest(
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<boolean> {
-    return ownership.guests.includes(userId);
+    return ownership.guests.some((obj) => {
+      let id: string;
+      if (obj instanceof FullUserDto) {
+        id = obj._id.toString();
+      } else {
+        id = obj.toString();
+      }
+      return id === userId.toString();
+    });
   }
 
   async isUserOwnerOrGuest(

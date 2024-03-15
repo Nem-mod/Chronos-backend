@@ -31,6 +31,7 @@ import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
 import { CalendarSystemService } from './calendar-system.service';
+import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { CalendarSystemService } from './calendar-system.service';
     CalendarEntryService,
     CalendarListService,
     CalendarSystemService,
+    CalendarOwnerGuard,
   ],
   exports: [CalendarSystemService],
 })

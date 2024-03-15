@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   HttpCode,
   Post,
@@ -11,10 +12,11 @@ import { ConfigService } from '@nestjs/config';
 import { CalendarService } from './calendar/calendar.service';
 import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 import { FullCalendarDto } from './calendar/dto/full-calendar.dto';
-import { AccessJwtAuthGuard } from '../auth/guard/access-jwt-auth.guard';
+import { AccessJwtAuthGuard } from '../auth/guards/access-jwt-auth.guard';
 import { Request as RequestType } from 'express';
 import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarSystemService } from './calendar-system.service';
+import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 
 @Controller({
   path: `calendar`,
@@ -46,5 +48,11 @@ export class CalendarSystemController {
       calendar,
       req.user,
     );
+  }
+
+  @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @Delete()
+  async deleteCalendar(@Request() req: RequestType) {
+    await this.calendarSystemService.deleteCalendar(req.calendar._id);
   }
 }

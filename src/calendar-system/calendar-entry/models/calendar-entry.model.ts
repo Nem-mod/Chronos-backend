@@ -6,7 +6,12 @@ import { VisibilitySettings } from '../visibility-settings/models/visibility-set
 
 @Schema()
 export class CalendarEntry extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Calendar.name })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Calendar.name,
+    index: true,
+    required: true,
+  })
   calendarId: Calendar;
 
   @Prop({

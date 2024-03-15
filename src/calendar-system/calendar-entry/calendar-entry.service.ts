@@ -51,4 +51,10 @@ export class CalendarEntryService {
   ): Promise<VisibilitySettings> {
     return new this.visibilitySettingsModel(visibilitySettings);
   }
+
+  async deleteAllCalendarEntries(
+    calendarId: CreateCalendarEntryDto[`calendarId`],
+  ) {
+    return await this.calendarEntryModel.deleteMany({ calendarId });
+  }
 }
