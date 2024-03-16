@@ -26,6 +26,7 @@ import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
 import { TokenDto } from './dto/token.dto';
 import { ConfigService } from '@nestjs/config';
 import timezones from 'timezones-list';
+import { CredentialsDto } from './dto/credentials.dto';
 
 @Controller({
   path: `auth`,
@@ -85,6 +86,18 @@ export class AuthController {
   ): Promise<void> {
     await this.authService.logout(req.cookies);
     await this.authService.deleteAuthCookie(res);
+  }
+
+  @UseGuards(RefreshJwtAuthGuard)
+  @HttpCode(204)
+  @Post(`refresh`)
+  async refreshTokens(
+    @Request() req: RequestType,
+    @Response({ passthrough: true }) res: ResponseType,
+  ) {
+    const tokens: CredentialsDto = await this.authService.login(req.user);
+
+    await this.authService.setAuthCookies(res, tokens);
   }
 
   @UseGuards(AccessJwtAuthGuard)
