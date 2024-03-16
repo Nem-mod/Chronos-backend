@@ -95,8 +95,8 @@ export class AuthController {
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ) {
+    await this.authService.logout(req.cookies);
     const tokens: CredentialsDto = await this.authService.login(req.user);
-
     await this.authService.setAuthCookies(res, tokens);
   }
 
