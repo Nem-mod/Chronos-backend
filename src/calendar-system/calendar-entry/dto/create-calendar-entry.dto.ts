@@ -19,7 +19,7 @@ export class CreateCalendarEntryDto {
 
   @IsDefined()
   @IsString()
-  calendarId: FullCalendarDto | CreateCalendarDto[`_id`];
+  calendar: FullCalendarDto | CreateCalendarDto[`_id`];
 
   @IsOptional()
   @ValidateNested({ each: true })

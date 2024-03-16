@@ -31,7 +31,7 @@ export class CalendarSystemService {
     );
     const calendarEntry: FullCalendarEntryDto =
       await this.calendarEntryService.createCalendarEntry({
-        calendarId: newCalendar._id,
+        calendar: newCalendar._id,
       });
     await this.calendarListService.addCalendarEntryToList(
       calendarEntry,
@@ -59,5 +59,11 @@ export class CalendarSystemService {
 
     for (const userId of allCalendarUserIds)
       await this.calendarListService.clearListFromTombstones(userId);
+  }
+
+  async getAllSubscribedCalendars(
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarListDto> {
+    return await this.calendarListService.getAllCalendarsFromList(userId);
   }
 }

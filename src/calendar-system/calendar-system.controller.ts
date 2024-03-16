@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   ForbiddenException,
+  Get,
   HttpCode,
   Post,
   Request,
@@ -18,6 +19,7 @@ import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { CalendarListService } from './calendar-list/calendar-list.service';
+import { FullCalendarListDto } from './calendar-list/dto/full-calendar-list.dto';
 
 @Controller({
   path: `calendar`,
@@ -55,5 +57,15 @@ export class CalendarSystemController {
   @Delete()
   async deleteCalendar(@Request() req: RequestType) {
     await this.calendarSystemService.deleteCalendar(req.calendar._id);
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
+  @Get(`all`)
+  async getAllSubscribedCalendars(
+    @Request() req: RequestType,
+  ): Promise<FullCalendarListDto> {
+    return await this.calendarSystemService.getAllSubscribedCalendars(
+      req.user._id,
+    );
   }
 }

@@ -12,7 +12,7 @@ export class CalendarEntry extends Document {
     index: true,
     required: true,
   })
-  calendarId: Calendar;
+  calendar: Calendar;
 
   @Prop({
     type: RemindSettings,

@@ -52,9 +52,7 @@ export class CalendarEntryService {
     return new this.visibilitySettingsModel(visibilitySettings);
   }
 
-  async deleteAllCalendarEntries(
-    calendarId: CreateCalendarEntryDto[`calendarId`],
-  ) {
-    return await this.calendarEntryModel.deleteMany({ calendarId });
+  async deleteAllCalendarEntries(calendar: CreateCalendarEntryDto[`calendar`]) {
+    return await this.calendarEntryModel.deleteMany({ calendar });
   }
 }
