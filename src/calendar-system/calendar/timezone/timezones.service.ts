@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import timezones from 'timezones-list';
 import { InjectModel } from '@nestjs/mongoose';
 import { Timezone } from './models/timezone.model';
@@ -25,6 +29,8 @@ export class TimezonesService {
   }
 
   async findTimezoneByCode(tzCode: TimezonteDto[`_id`]): Promise<Timezone> {
-    return await this.timezoneModel.findById(tzCode);
+    const timezone: Timezone = await this.timezoneModel.findById(tzCode);
+    if (!timezone) throw new NotFoundException(`Timezone not found`);
+    return timezone;
   }
 }

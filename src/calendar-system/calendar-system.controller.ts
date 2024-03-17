@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   Get,
   HttpCode,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -20,6 +21,7 @@ import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { CalendarListService } from './calendar-list/calendar-list.service';
 import { FullCalendarListDto } from './calendar-list/dto/full-calendar-list.dto';
+import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
 
 @Controller({
   path: `calendar`,
@@ -68,4 +70,16 @@ export class CalendarSystemController {
       req.user._id,
     );
   }
+
+  @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @Patch()
+  async updateCalendar(
+    @Request() req: RequestType,
+    @Body() calendar: UpdateCalendarDto,
+  ): Promise<FullCalendarDto> {
+    return await this.calendarSystemService.updateCalendar(
+      req.calendar._id,
+      calendar,
+    );
+  } // TODO: Create CalendarEntryOwnerGuard, update calendar entry
 }
