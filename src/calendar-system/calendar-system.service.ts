@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CalendarService } from './calendar/calendar.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
@@ -11,15 +11,22 @@ import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.d
 import { OwnershipService } from '../user/ownership/ownership.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
-import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
 import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
-import { CalendarEntry } from './calendar-entry/models/calendar-entry.model';
+import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
+import { User } from '../user/models/user.model';
+import { JwtPayloadDto } from '../user/email-send/dto/jwt-payload.dto';
+import { UserService } from '../user/user.service';
+import { ConfigService } from '@nestjs/config';
+import { EmailSendService } from '../user/email-send/email-send.service';
 
 @Injectable()
 export class CalendarSystemService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly timezoneService: TimezonesService,
     private readonly ownershipService: OwnershipService,
+    private readonly emailSendService: EmailSendService,
+    private readonly userService: UserService,
     private readonly calendarService: CalendarService,
     private readonly calendarEntryService: CalendarEntryService,
     private readonly calendarListService: CalendarListService,
@@ -51,6 +58,37 @@ export class CalendarSystemService {
 
   async initTimezoneDatabase(): Promise<void> {
     await this.timezoneService.fillTimezoneDatabase();
+  }
+
+  async sendGuestInvitation(
+    calendarId: CreateCalendarDto[`_id`],
+    linkInfo: SendLinkDto,
+  ): Promise<void> {
+    const user: User = await this.userService.findByUsername(linkInfo.username);
+    // TODO: check here if the user already has this calendar
+
+    linkInfo = await this.emailSendService.prepareLink(
+      { username: user.username, sub: calendarId } as JwtPayloadDto,
+      linkInfo,
+      this.configService.get(`jwt.invite`),
+      `inviteToken`,
+    );
+
+    await this.emailSendService.sendEmail(
+      user.email,
+      this.configService.get(`api.sendgrid.verify-template`),
+      { link: linkInfo.returnUrl },
+    );
+  }
+
+  async validateGuestInvitation(userId: CreateUserDto[`_id`], token: string) {
+    const payload: JwtPayloadDto =
+      await this.emailSendService.validateTokenFromEmail(
+        token,
+        this.configService.get(`jwt.invite`),
+      );
+    // TODO: check here if the user in with correct username
+    return payload;
   }
 
   async deleteCalendar(calendarId: CreateCalendarDto[`_id`]): Promise<void> {

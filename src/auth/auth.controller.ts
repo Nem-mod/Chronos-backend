@@ -8,10 +8,8 @@ import {
   HttpCode,
   Body,
   Delete,
-  Res,
   Patch,
   Query,
-  Param,
   ForbiddenException,
 } from '@nestjs/common';
 import { Request as RequestType, Response as ResponseType } from 'express';
@@ -22,10 +20,8 @@ import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
-import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
-import { TokenDto } from './dto/token.dto';
+import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { ConfigService } from '@nestjs/config';
-import timezones from 'timezones-list';
 import { CredentialsDto } from './dto/credentials.dto';
 
 @Controller({
@@ -45,7 +41,7 @@ export class AuthController {
 
   @HttpCode(204)
   @Post(`verify/send-code`)
-  async sendVerify(@Body() linkInfo: SendVerifyLinkDto) {
+  async sendVerify(@Body() linkInfo: SendLinkDto) {
     await this.authService.sendVerifyEmail(linkInfo);
   }
 

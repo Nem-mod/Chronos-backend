@@ -12,11 +12,13 @@ import { Model } from 'mongoose';
 import { FullUserDto } from './dto/full-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SendGridService } from '@anchan828/nest-sendgrid';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
     private readonly sendGridService: SendGridService,
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
@@ -39,17 +41,6 @@ export class UserService {
     }
 
     return newUser;
-  }
-
-  async sendVerifyEmail(user: FullUserDto, returnUrl: string): Promise<void> {
-    await this.sendGridService.send({
-      to: user.email,
-      from: this.configService.get(`api.sendgrid.sender`),
-      dynamicTemplateData: {
-        link: returnUrl,
-      },
-      templateId: this.configService.get(`api.sendgrid.verify-template`),
-    });
   }
 
   async findByUsername(

@@ -7,11 +7,11 @@ import {
   HttpCode,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CalendarService } from './calendar/calendar.service';
 import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 import { FullCalendarDto } from './calendar/dto/full-calendar.dto';
 import { AccessJwtAuthGuard } from '../auth/guards/access-jwt-auth.guard';
@@ -19,12 +19,12 @@ import { Request as RequestType } from 'express';
 import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
-import { CalendarListService } from './calendar-list/calendar-list.service';
 import { FullCalendarListDto } from './calendar-list/dto/full-calendar-list.dto';
 import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
 import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-owner.guard';
 import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.dto';
 import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
+import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 
 @Controller({
   path: `calendar`,
@@ -59,9 +59,34 @@ export class CalendarSystemController {
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
   @HttpCode(204)
+  @Post(`npminvite/send-code`)
+  async sendGuestInvitation(
+    @Body() calendar: UpdateCalendarDto,
+    @Body() linkInfo: SendLinkDto,
+  ) {
+    await this.calendarSystemService.sendGuestInvitation(
+      calendar._id,
+      linkInfo,
+    );
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
+  @Patch(`invite/validate-code`)
+  async validateGuestInvitation(
+    @Request() req: RequestType,
+    @Query(`token`) token: string,
+  ) {
+    return await this.calendarSystemService.validateGuestInvitation(
+      req.user._id,
+      token,
+    );
+  }
+
+  @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @HttpCode(204)
   @Delete()
-  async deleteCalendar(@Request() req: RequestType) {
-    await this.calendarSystemService.deleteCalendar(req.calendar._id);
+  async deleteCalendar(@Body() calendar: UpdateCalendarDto) {
+    await this.calendarSystemService.deleteCalendar(calendar._id);
   }
 
   @UseGuards(AccessJwtAuthGuard)
@@ -80,7 +105,7 @@ export class CalendarSystemController {
     @Body() calendar: UpdateCalendarDto,
   ): Promise<FullCalendarDto> {
     return await this.calendarSystemService.updateCalendar(calendar);
-  } // TODO: Create CalendarEntryOwnerGuard, update calendar entry
+  }
 
   @UseGuards(AccessJwtAuthGuard, CalendarEntryOwnerGuard)
   @Patch(`entry`)

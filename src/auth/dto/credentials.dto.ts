@@ -1,10 +1,9 @@
 import { IsString } from 'class-validator';
-import { TokenDto } from './token.dto';
 
 export class CredentialsDto {
   @IsString()
-  refreshToken: TokenDto[`token`];
+  refreshToken: string;
 
   @IsString()
-  accessToken: TokenDto[`token`];
+  accessToken: string;
 }

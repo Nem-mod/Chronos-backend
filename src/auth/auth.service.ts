@@ -14,13 +14,12 @@ import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
 import { CredentialsDto } from './dto/credentials.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
-import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { JwtPayloadDto } from '../user/email-send/dto/jwt-payload.dto';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
-import { SendVerifyLinkDto } from './dto/send-verify-link.dto';
-import { TokenDto } from './dto/token.dto';
-import { CalendarService } from '../calendar-system/calendar/calendar.service';
 import { CalendarSystemService } from '../calendar-system/calendar-system.service';
 import { User } from '../user/models/user.model';
+import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
+import { EmailSendService } from '../user/email-send/email-send.service';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +27,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
+    private readonly emailSendService: EmailSendService,
     private readonly calendarSystemService: CalendarSystemService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -61,30 +61,30 @@ export class AuthService {
     return newUser;
   }
 
-  async sendVerifyEmail(linkInfo: SendVerifyLinkDto): Promise<void> {
+  async sendVerifyEmail(linkInfo: SendLinkDto): Promise<void> {
     const user: User = await this.userService.findByUsername(linkInfo.username);
     if (user.verified) throw new ForbiddenException(`User already verified`);
 
-    const payload: JwtPayloadDto = { username: user.username, sub: user._id };
-    const verifyToken = this.jwtService.sign(
-      payload,
+    linkInfo = await this.emailSendService.prepareLink(
+      { username: user.username, sub: user._id } as JwtPayloadDto,
+      linkInfo,
       this.configService.get(`jwt.verify`),
+      `verifyToken`,
     );
-    linkInfo.returnUrl = linkInfo.returnUrl.replace(`verifyToken`, verifyToken);
 
-    await this.userService.sendVerifyEmail(user, linkInfo.returnUrl);
+    await this.emailSendService.sendEmail(
+      user.email,
+      this.configService.get(`api.sendgrid.verify-template`),
+      { link: linkInfo.returnUrl },
+    );
   }
 
-  async validateVerifyEmail(token: TokenDto[`token`]): Promise<void> {
-    let payload: JwtPayloadDto;
-    try {
-      payload = this.jwtService.verify(
+  async validateVerifyEmail(token: string): Promise<void> {
+    const payload: JwtPayloadDto =
+      await this.emailSendService.validateTokenFromEmail(
         token,
         this.configService.get(`jwt.verify`),
       );
-    } catch (err) {
-      throw new BadRequestException(`Token is invalid`);
-    }
 
     await this.userService.verify(payload.sub);
   }

@@ -32,6 +32,7 @@ import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
+import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-owner.guard';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
     CalendarListService,
     CalendarSystemService,
     CalendarOwnerGuard,
+    CalendarEntryOwnerGuard,
   ],
   exports: [CalendarSystemService],
 })

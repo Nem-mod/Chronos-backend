@@ -5,7 +5,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
 import { Request as RequestType } from 'express';
 import { AuthService } from '../auth.service';
-import { JwtPayloadDto } from '../dto/jwt-payload.dto';
+import { JwtPayloadDto } from '../../user/email-send/dto/jwt-payload.dto';
 import { FullUserDto } from '../../user/dto/full-user.dto';
 
 @Injectable()

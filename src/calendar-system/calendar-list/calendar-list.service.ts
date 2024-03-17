@@ -103,6 +103,28 @@ export class CalendarListService {
     );
   }
 
+  async containsCalendar(
+    listId: CreateCalendarListDto[`_id`],
+    calendatrId: CreateCalendarDto[`_id`],
+  ) {
+    const calendarList: FullCalendarListDto = (
+      await this.findCalendarListById(listId)
+    ).populate({ path: `calendarEntries` }) as FullCalendarListDto;
+
+    console.log(calendarList);
+    // return calendarList.calendarEntries.some(
+    //   (obj: string | FullCalendarEntryDto) => {
+    //     let id: string;
+    //     if (obj instanceof FullCalendarEntryDto) {
+    //       id = obj._id.toString();
+    //     } else {
+    //       id = obj.toString();
+    //     }
+    //     return id === calendarEntryId.toString();
+    //   },
+    // );
+  }
+
   async clearListFromTombstones(userId: CreateUserDto[`_id`]) {
     const calendarList: CalendarList = await this.findCalendarListById(userId);
     const calendarListPopulated: CalendarList = await (
