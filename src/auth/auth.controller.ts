@@ -121,6 +121,4 @@ export class AuthController {
     await this.authService.deleteProfile(req.user); // TODO: unsubscribe from all events on account deletion
     await this.authService.deleteAuthCookie(res);
   }
-
-  // TODO: create refreshToken endpoint
 }

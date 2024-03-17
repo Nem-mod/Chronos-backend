@@ -59,7 +59,7 @@ export class CalendarSystemController {
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
   @HttpCode(204)
-  @Post(`npminvite/send-code`)
+  @Post(`invite/send-code`)
   async sendGuestInvitation(
     @Body() calendar: UpdateCalendarDto,
     @Body() linkInfo: SendLinkDto,
@@ -80,6 +80,7 @@ export class CalendarSystemController {
       req.user._id,
       token,
     );
+    // TODO: add user to guests. Create module for expired tokens
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
