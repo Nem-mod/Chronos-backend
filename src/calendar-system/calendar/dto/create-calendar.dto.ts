@@ -15,7 +15,7 @@ import { Type } from 'class-transformer';
 export class CreateCalendarDto {
   @IsOptional()
   @IsString()
-  _id: string;
+  _id?: string;
 
   @IsDefined()
   @MinLength(3)

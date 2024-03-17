@@ -18,22 +18,19 @@ export class CalendarOwnerGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const calendar: FullCalendarDto =
-      await this.getCalendarFromRequest(request);
+    const req = context.switchToHttp().getRequest();
+    const calendar: FullCalendarDto = await this.getCalendarFromRequest(req);
 
-    if (
-      !(await this.ownershipService.isOwner(calendar.users, request.user._id))
-    )
+    if (!(await this.ownershipService.isOwner(calendar.users, req.user._id)))
       throw new ForbiddenException(`You are not a calendar owner`);
 
-    request.calendar = calendar;
+    req.calendar = calendar;
 
     return true;
   }
 
   async getCalendarFromRequest(req: RequestType): Promise<FullCalendarDto> {
-    const calendarId = req.query.calendarId;
+    const calendarId = req.body._id;
     return await this.calendarService.findById(calendarId as string);
   }
 }

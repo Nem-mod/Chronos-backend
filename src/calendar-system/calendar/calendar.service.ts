@@ -54,17 +54,15 @@ export class CalendarService {
     return calendar;
   }
 
-  async update(
-    id: CreateCalendarDto[`_id`],
-    calendar: UpdateCalendarDto,
-  ): Promise<FullCalendarDto> {
-    delete calendar._id;
+  async update(calendar: UpdateCalendarDto): Promise<FullCalendarDto> {
     delete calendar.users;
 
     await this.timezonesService.findTimezoneByCode(calendar.timezone as string);
 
     const updatedCalendar: Calendar =
-      await this.calendarModel.findByIdAndUpdate(id, calendar, { new: true });
+      await this.calendarModel.findByIdAndUpdate(calendar._id, calendar, {
+        new: true,
+      });
     if (!updatedCalendar) throw new NotFoundException(`Calendar not found`);
     return updatedCalendar;
   }

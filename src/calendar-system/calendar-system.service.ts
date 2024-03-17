@@ -11,6 +11,9 @@ import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.d
 import { OwnershipService } from '../user/ownership/ownership.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
+import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
+import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
+import { CalendarEntry } from './calendar-entry/models/calendar-entry.model';
 
 @Injectable()
 export class CalendarSystemService {
@@ -68,10 +71,13 @@ export class CalendarSystemService {
     return await this.calendarListService.getAllCalendarsFromList(userId);
   }
 
-  async updateCalendar(
-    calendarId: CreateCalendarDto[`_id`],
-    calendar: UpdateCalendarDto,
-  ): Promise<FullCalendarDto> {
-    return await this.calendarService.update(calendarId, calendar);
+  async updateCalendar(calendar: UpdateCalendarDto): Promise<FullCalendarDto> {
+    return await this.calendarService.update(calendar);
+  }
+
+  async updateCalendarEntry(
+    calendarEntry: UpdateCalendarEntryDto,
+  ): Promise<FullCalendarEntryDto> {
+    return await this.calendarEntryService.update(calendarEntry);
   }
 }

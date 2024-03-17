@@ -84,6 +84,25 @@ export class CalendarListService {
     await calendarList.save();
   }
 
+  async containsCalendarEntry(
+    listId: CreateCalendarListDto[`_id`],
+    calendarEntryId: CreateCalendarEntryDto[`_id`],
+  ): Promise<boolean> {
+    const calendarList: FullCalendarListDto =
+      await this.findCalendarListById(listId);
+    return calendarList.calendarEntries.some(
+      (obj: string | FullCalendarEntryDto) => {
+        let id: string;
+        if (obj instanceof FullCalendarEntryDto) {
+          id = obj._id.toString();
+        } else {
+          id = obj.toString();
+        }
+        return id === calendarEntryId.toString();
+      },
+    );
+  }
+
   async clearListFromTombstones(userId: CreateUserDto[`_id`]) {
     const calendarList: CalendarList = await this.findCalendarListById(userId);
     const calendarListPopulated: CalendarList = await (

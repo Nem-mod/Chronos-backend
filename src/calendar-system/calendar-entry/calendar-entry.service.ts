@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CalendarEntry } from './models/calendar-entry.model';
 import { Model } from 'mongoose';
@@ -8,6 +8,7 @@ import { RemindSettings } from './remind-settings/models/remind-settings.model';
 import { VisibilitySettings } from './visibility-settings/models/visibility-settings.model';
 import { RemindSettingsDto } from './remind-settings/dto/remind-settings.dto';
 import { VisibilitySettingsDto } from './visibility-settings/dto/visibility-settings.dto';
+import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
 
 @Injectable()
 export class CalendarEntryService {
@@ -50,6 +51,27 @@ export class CalendarEntryService {
     visibilitySettings: VisibilitySettingsDto,
   ): Promise<VisibilitySettings> {
     return new this.visibilitySettingsModel(visibilitySettings);
+  }
+
+  async findById(id: CreateCalendarEntryDto[`_id`]): Promise<CalendarEntry> {
+    const calendarEntry: CalendarEntry =
+      await this.calendarEntryModel.findById(id);
+    if (!calendarEntry) throw new NotFoundException(`Calendar entry not found`);
+    return calendarEntry;
+  }
+
+  async update(
+    calendarEntry: UpdateCalendarEntryDto,
+  ): Promise<FullCalendarEntryDto> {
+    const newCalendarEntry: CalendarEntry =
+      await this.calendarEntryModel.findByIdAndUpdate(
+        calendarEntry._id,
+        calendarEntry,
+        { new: true },
+      );
+    if (!newCalendarEntry)
+      throw new NotFoundException(`Calendar entry not found`);
+    return newCalendarEntry;
   }
 
   async deleteAllCalendarEntries(calendar: CreateCalendarEntryDto[`calendar`]) {

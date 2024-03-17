@@ -24,10 +24,10 @@ export class CreateCalendarEntryDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => RemindSettingsDto)
-  remindSettings?: RemindSettingsDto = null;
+  remindSettings?: RemindSettingsDto;
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => VisibilitySettingsDto)
-  visibilitySettings?: VisibilitySettingsDto = null;
+  visibilitySettings?: VisibilitySettingsDto;
 }

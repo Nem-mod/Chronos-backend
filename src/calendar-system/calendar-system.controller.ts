@@ -22,6 +22,9 @@ import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { CalendarListService } from './calendar-list/calendar-list.service';
 import { FullCalendarListDto } from './calendar-list/dto/full-calendar-list.dto';
 import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
+import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-owner.guard';
+import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.dto';
+import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
 
 @Controller({
   path: `calendar`,
@@ -74,12 +77,16 @@ export class CalendarSystemController {
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
   @Patch()
   async updateCalendar(
-    @Request() req: RequestType,
     @Body() calendar: UpdateCalendarDto,
   ): Promise<FullCalendarDto> {
-    return await this.calendarSystemService.updateCalendar(
-      req.calendar._id,
-      calendar,
-    );
+    return await this.calendarSystemService.updateCalendar(calendar);
   } // TODO: Create CalendarEntryOwnerGuard, update calendar entry
+
+  @UseGuards(AccessJwtAuthGuard, CalendarEntryOwnerGuard)
+  @Patch(`entry`)
+  async updateCalendarEntry(
+    @Body() calendarEntry: UpdateCalendarEntryDto,
+  ): Promise<FullCalendarEntryDto> {
+    return await this.calendarSystemService.updateCalendarEntry(calendarEntry);
+  }
 }
