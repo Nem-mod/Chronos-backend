@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CalendarService } from './calendar/calendar.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
@@ -110,7 +111,7 @@ export class CalendarSystemService {
     if (userId.toString() !== payload.userId.toString())
       throw new ForbiddenException(`This invitation isn't for you`);
     if (this.expiredInviteTokens.has(token))
-      throw new BadRequestException(`This invitation has expired`);
+      throw new UnauthorizedException(`This invitation has expired`);
     if (
       await this.calendarListService.containsCalendar(
         userId,
