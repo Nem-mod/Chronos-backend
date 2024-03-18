@@ -56,32 +56,29 @@ export class CalendarListService {
     return calendarList;
   }
 
-  async addCalendarEntryToList(
-    calendarEntry: FullCalendarEntryDto,
-    userId: CreateUserDto[`_id`],
-  ) {
-    await this.addCalendarEntriesToList(
-      { calendarEntries: [calendarEntry] },
-      userId,
-    );
+  async getAllCalendarsFromList(
+    listId: CreateCalendarListDto[`_id`],
+  ): Promise<FullCalendarListDto> {
+    return (await this.findCalendarListById(listId)).populate({
+      path: `calendarEntries`,
+      populate: {
+        path: `calendar`,
+      },
+    });
   }
 
-  async addCalendarEntriesToList(
-    calendarEntryIds: UpdateCalendarListDto,
-    userId: CreateUserDto[`_id`],
-  ) {
-    let calendarList: CalendarList;
-    try {
-      calendarList = await this.findCalendarListById(userId);
-    } catch (err) {
-      await this.createCalendarList({ _id: userId });
-      calendarList = await this.findCalendarListById(userId);
-    } // TODO: maybe move to another function like findCalendarListByIdOrCreate
+  async getCalendarEntryByCalendar(
+    listId: CreateCalendarListDto[`_id`],
+    calendarId: CreateCalendarDto[`_id`],
+  ): Promise<FullCalendarEntryDto> {
+    const calendarList: FullCalendarListDto = (await (
+      await this.findCalendarListById(listId)
+    ).populate({ path: `calendarEntries` })) as FullCalendarListDto;
 
-    for (const calendarEntry of calendarEntryIds.calendarEntries) {
-      calendarList.calendarEntries.push(calendarEntry as CalendarEntry);
-    }
-    await calendarList.save();
+    return calendarList.calendarEntries.find(
+      (calendarEntry: FullCalendarEntryDto) =>
+        calendarEntry.calendar.toString() === calendarId.toString(),
+    ) as FullCalendarEntryDto;
   }
 
   async containsCalendarEntry(
@@ -114,23 +111,40 @@ export class CalendarListService {
     return calendarList.calendarEntries.some(
       (obj) => obj.calendar.toString() === calendatrId.toString(),
     );
-    // return calendarList.calendarEntries.some(
-    //   (obj: string | FullCalendarEntryDto) => {
-    //     let id: string;
-    //     if (obj instanceof FullCalendarEntryDto) {
-    //       id = obj._id.toString();
-    //     } else {
-    //       id = obj.toString();
-    //     }
-    //     return id === calendarEntryId.toString();
-    //   },
-    // );
   }
 
-  async clearListFromTombstones(userId: CreateUserDto[`_id`]) {
-    const calendarList: CalendarList = await this.findCalendarListById(userId);
+  async addCalendarEntryToList(
+    calendarEntry: FullCalendarEntryDto,
+    userId: CreateUserDto[`_id`],
+  ) {
+    await this.addCalendarEntriesToList(
+      { calendarEntries: [calendarEntry] },
+      userId,
+    );
+  }
+
+  async addCalendarEntriesToList(
+    calendarEntryIds: UpdateCalendarListDto,
+    userId: CreateUserDto[`_id`],
+  ) {
+    let calendarList: CalendarList;
+    try {
+      calendarList = await this.findCalendarListById(userId);
+    } catch (err) {
+      await this.createCalendarList({ _id: userId });
+      calendarList = await this.findCalendarListById(userId);
+    } // TODO: maybe move to another function like findCalendarListByIdOrCreate
+
+    for (const calendarEntry of calendarEntryIds.calendarEntries) {
+      calendarList.calendarEntries.push(calendarEntry as CalendarEntry);
+    }
+    await calendarList.save();
+  }
+
+  async clearListFromTombstones(listId: CreateCalendarListDto[`_id`]) {
+    const calendarList: CalendarList = await this.findCalendarListById(listId);
     const calendarListPopulated: CalendarList = await (
-      await this.findCalendarListById(userId)
+      await this.findCalendarListById(listId)
     ).populate({
       path: `calendarEntries`,
     });
@@ -138,16 +152,5 @@ export class CalendarListService {
     calendarList.calendarEntries = calendarListPopulated.calendarEntries;
 
     await calendarList.save();
-  }
-
-  async getAllCalendarsFromList(
-    listId: CreateCalendarListDto[`_id`],
-  ): Promise<FullCalendarListDto> {
-    return (await this.findCalendarListById(listId)).populate({
-      path: `calendarEntries`,
-      populate: {
-        path: `calendar`,
-      },
-    });
   }
 }

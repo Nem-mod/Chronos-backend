@@ -19,6 +19,7 @@ export class OwnershipService {
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<boolean> {
+    userId = userId.toString();
     return ownership.owners.some((obj) => {
       let id: string;
       if (obj instanceof FullUserDto) {
@@ -26,7 +27,7 @@ export class OwnershipService {
       } else {
         id = obj.toString();
       }
-      return id === userId.toString();
+      return id === userId;
     });
   }
 
@@ -34,6 +35,7 @@ export class OwnershipService {
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<boolean> {
+    userId = userId.toString();
     return ownership.guests.some((obj) => {
       let id: string;
       if (obj instanceof FullUserDto) {
@@ -41,7 +43,7 @@ export class OwnershipService {
       } else {
         id = obj.toString();
       }
-      return id === userId.toString();
+      return id === userId;
     });
   }
 
@@ -75,7 +77,7 @@ export class OwnershipService {
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<OwnershipDto> {
-    ownership.guests = [...new Set([...ownership.guests, userId])]; //FIXME: maybe just change to push because of bad performance
+    ownership.guests = [...new Set([...ownership.guests, userId])]; //TODO: maybe just change to push because of bad performance
 
     return ownership;
   }
@@ -84,15 +86,50 @@ export class OwnershipService {
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<OwnershipDto> {
+    userId = userId.toString();
+    ownership = await this.removeGuest(ownership, userId);
+    ownership.owners = [...new Set([...ownership.owners, userId])]; //TODO: maybe just change to push because of bad performance
+
+    return ownership;
+  }
+
+  async removeGuestOrOwner(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    ownership = await this.removeGuest(ownership, userId);
+    ownership = await this.removeOwner(ownership, userId);
+
+    return ownership;
+  }
+
+  async removeGuest(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    userId = userId.toString();
     ownership.guests = ownership.guests.filter((guest) => {
       if (guest instanceof FullUserDto) {
-        return guest._id !== userId;
+        return guest._id.toString() !== userId;
       } else {
-        return guest !== userId;
+        return guest.toString() !== userId;
       }
     });
-    ownership.owners = [...new Set([...ownership.owners, userId])]; //FIXME: maybe just change to push because of bad performance
+    return ownership;
+  }
 
+  async removeOwner(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    userId = userId.toString();
+    ownership.owners = ownership.owners.filter((owner) => {
+      if (owner instanceof FullUserDto) {
+        return owner._id.toString() !== userId;
+      } else {
+        return owner.toString() !== userId;
+      }
+    });
     return ownership;
   }
 }

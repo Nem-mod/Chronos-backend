@@ -80,4 +80,17 @@ export class CalendarService {
 
     return await this.update(calendar as UpdateCalendarDto);
   }
+
+  async removeGuestOrOwner(
+    calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    const calendar: FullCalendarDto = await this.findById(calendarId);
+    calendar.users = await this.ownershipService.removeGuestOrOwner(
+      calendar.users,
+      userId,
+    );
+    console.log(calendar);
+    return await this.update(calendar as UpdateCalendarDto);
+  }
 }

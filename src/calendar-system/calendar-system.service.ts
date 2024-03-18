@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -24,6 +25,7 @@ import { ConfigService } from '@nestjs/config';
 import { EmailSendService } from '../user/email-send/email-send.service';
 import { InvitePayloadDto } from './calendar/dto/invite-payload.dto';
 import { CalendarList } from './calendar-list/models/calendar-list.model';
+import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
 
 @Injectable()
 export class CalendarSystemService {
@@ -89,7 +91,7 @@ export class CalendarSystemService {
 
     await this.emailSendService.sendEmail(
       user.email,
-      this.configService.get(`api.sendgrid.invitation-template`), //TODO: create new template for invitations
+      this.configService.get(`api.sendgrid.invitation-template`),
       {
         calendarName: calendar.name,
         ownerName: senderName,
@@ -138,6 +140,28 @@ export class CalendarSystemService {
 
     for (const userId of allCalendarUserIds)
       await this.calendarListService.clearListFromTombstones(userId);
+  }
+
+  async unsubscribeFromCalendar(
+    userId: CreateUserDto[`_id`],
+    calendarEntryId: CreateCalendarEntryDto[`_id`],
+  ): Promise<void> {
+    if (
+      !(await this.calendarListService.containsCalendarEntry(
+        userId,
+        calendarEntryId,
+      ))
+    )
+      throw new BadRequestException(`You have no calendar entry with this Id`);
+    const calendarEntry: FullCalendarEntryDto =
+      await this.calendarEntryService.findById(calendarEntryId);
+
+    await this.calendarService.removeGuestOrOwner(
+      calendarEntry.calendar as string,
+      userId,
+    );
+    await this.calendarEntryService.delete(calendarEntry._id);
+    await this.calendarListService.clearListFromTombstones(userId);
   }
 
   async getAllSubscribedCalendars(

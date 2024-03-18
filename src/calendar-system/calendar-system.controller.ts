@@ -16,7 +16,6 @@ import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 import { FullCalendarDto } from './calendar/dto/full-calendar.dto';
 import { AccessJwtAuthGuard } from '../auth/guards/access-jwt-auth.guard';
 import { Request as RequestType } from 'express';
-import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { FullCalendarListDto } from './calendar-list/dto/full-calendar-list.dto';
@@ -82,7 +81,6 @@ export class CalendarSystemController {
       req.user._id,
       token,
     );
-    // TODO: add user to guests
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
@@ -90,6 +88,19 @@ export class CalendarSystemController {
   @Delete()
   async deleteCalendar(@Body() calendar: UpdateCalendarDto) {
     await this.calendarSystemService.deleteCalendar(calendar._id);
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
+  @HttpCode(204)
+  @Delete(`unsubscribe`)
+  async unsubscribeFromCalendar(
+    @Request() req: RequestType,
+    @Body() calendarEntry: UpdateCalendarEntryDto,
+  ) {
+    await this.calendarSystemService.unsubscribeFromCalendar(
+      req.user._id,
+      calendarEntry._id,
+    );
   }
 
   @UseGuards(AccessJwtAuthGuard)

@@ -74,6 +74,13 @@ export class CalendarEntryService {
     return newCalendarEntry;
   }
 
+  async delete(id: CreateCalendarEntryDto[`_id`]): Promise<CalendarEntry> {
+    const calendarEntry: CalendarEntry =
+      await this.calendarEntryModel.findByIdAndDelete(id);
+    if (!calendarEntry) throw new NotFoundException(`Calendar entry not found`);
+    return calendarEntry;
+  }
+
   async deleteAllCalendarEntries(calendar: CreateCalendarEntryDto[`calendar`]) {
     return await this.calendarEntryModel.deleteMany({ calendar });
   }
