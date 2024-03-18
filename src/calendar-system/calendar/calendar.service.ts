@@ -90,7 +90,6 @@ export class CalendarService {
       calendar.users,
       userId,
     );
-    console.log(calendar);
     return await this.update(calendar as UpdateCalendarDto);
   }
 }

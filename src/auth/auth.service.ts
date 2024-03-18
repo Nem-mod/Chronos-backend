@@ -50,7 +50,7 @@ export class AuthService {
 
   async validateRefresh(tokens: CredentialsDto): Promise<CredentialsDto> {
     if (this.expiredRefreshTokens.has(tokens.refreshToken))
-      throw new ForbiddenException(`Refresh token is expired`);
+      throw new UnauthorizedException(`Refresh token has expired`);
     return tokens;
   }
 

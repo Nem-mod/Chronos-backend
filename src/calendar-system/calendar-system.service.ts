@@ -109,6 +109,8 @@ export class CalendarSystemService {
 
     if (userId.toString() !== payload.userId.toString())
       throw new ForbiddenException(`This invitation isn't for you`);
+    if (this.expiredInviteTokens.has(token))
+      throw new BadRequestException(`This invitation has expired`);
     if (
       await this.calendarListService.containsCalendar(
         userId,
