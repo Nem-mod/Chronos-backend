@@ -70,5 +70,29 @@ export class OwnershipService {
       }
     });
   }
-  // async addOwner(ownership: OwnershipDto, userId: CreateUserDto[`_id`]) {}
+
+  async addGuest(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    ownership.guests = [...new Set([...ownership.guests, userId])]; //FIXME: maybe just change to push because of bad performance
+
+    return ownership;
+  }
+
+  async addOwner(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    ownership.guests = ownership.guests.filter((guest) => {
+      if (guest instanceof FullUserDto) {
+        return guest._id !== userId;
+      } else {
+        return guest !== userId;
+      }
+    });
+    ownership.owners = [...new Set([...ownership.owners, userId])]; //FIXME: maybe just change to push because of bad performance
+
+    return ownership;
+  }
 }

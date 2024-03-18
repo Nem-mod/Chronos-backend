@@ -106,12 +106,14 @@ export class CalendarListService {
   async containsCalendar(
     listId: CreateCalendarListDto[`_id`],
     calendatrId: CreateCalendarDto[`_id`],
-  ) {
-    const calendarList: FullCalendarListDto = (
+  ): Promise<boolean> {
+    const calendarList: FullCalendarListDto = (await (
       await this.findCalendarListById(listId)
-    ).populate({ path: `calendarEntries` }) as FullCalendarListDto;
+    ).populate({ path: `calendarEntries` })) as FullCalendarListDto;
 
-    console.log(calendarList);
+    return calendarList.calendarEntries.some(
+      (obj) => obj.calendar.toString() === calendatrId.toString(),
+    );
     // return calendarList.calendarEntries.some(
     //   (obj: string | FullCalendarEntryDto) => {
     //     let id: string;

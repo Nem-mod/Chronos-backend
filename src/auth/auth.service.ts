@@ -14,7 +14,7 @@ import { httponlyCookieOptions } from '../config/httponlyCookieOptions';
 import { CredentialsDto } from './dto/credentials.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
-import { JwtPayloadDto } from '../user/email-send/dto/jwt-payload.dto';
+import { VerifyPayloadDto } from './dto/verify-payload.dto';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { CalendarSystemService } from '../calendar-system/calendar-system.service';
 import { User } from '../user/models/user.model';
@@ -66,7 +66,7 @@ export class AuthService {
     if (user.verified) throw new ForbiddenException(`User already verified`);
 
     linkInfo = await this.emailSendService.prepareLink(
-      { username: user.username, sub: user._id } as JwtPayloadDto,
+      { username: user.username, sub: user._id } as VerifyPayloadDto,
       linkInfo,
       this.configService.get(`jwt.verify`),
       `verifyToken`,
@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   async validateVerifyEmail(token: string): Promise<void> {
-    const payload: JwtPayloadDto =
+    const payload: VerifyPayloadDto =
       await this.emailSendService.validateTokenFromEmail(
         token,
         this.configService.get(`jwt.verify`),
@@ -90,7 +90,10 @@ export class AuthService {
   }
 
   async login(user: FullUserDto): Promise<CredentialsDto> {
-    const payload: JwtPayloadDto = { username: user.username, sub: user._id };
+    const payload: VerifyPayloadDto = {
+      username: user.username,
+      sub: user._id,
+    };
 
     const accessToken = this.jwtService.sign(
       payload,

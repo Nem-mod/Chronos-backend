@@ -33,16 +33,15 @@ import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 export class CalendarSystemController {
   constructor(
     private readonly configService: ConfigService,
-    private readonly timezoneService: TimezonesService,
     private readonly calendarSystemService: CalendarSystemService,
   ) {}
 
   @HttpCode(204)
   @Post(`timezones`)
-  async fillTimezoneDatabase() {
+  async fillTimezoneDatabase(): Promise<void> {
     if (this.configService.get(`stage`) !== `develop`)
       throw new ForbiddenException(`This endpoint is only for development`);
-    await this.timezoneService.fillTimezoneDatabase();
+    await this.calendarSystemService.initTimezoneDatabase();
   }
 
   @UseGuards(AccessJwtAuthGuard)
@@ -61,16 +60,19 @@ export class CalendarSystemController {
   @HttpCode(204)
   @Post(`invite/send-code`)
   async sendGuestInvitation(
+    @Request() req: RequestType,
     @Body() calendar: UpdateCalendarDto,
     @Body() linkInfo: SendLinkDto,
-  ) {
+  ): Promise<void> {
     await this.calendarSystemService.sendGuestInvitation(
       calendar._id,
       linkInfo,
+      req.user.username,
     );
   }
 
   @UseGuards(AccessJwtAuthGuard)
+  @HttpCode(204)
   @Patch(`invite/validate-code`)
   async validateGuestInvitation(
     @Request() req: RequestType,
@@ -80,7 +82,7 @@ export class CalendarSystemController {
       req.user._id,
       token,
     );
-    // TODO: add user to guests. Create module for expired tokens
+    // TODO: add user to guests
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)

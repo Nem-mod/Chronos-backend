@@ -66,4 +66,18 @@ export class CalendarService {
     if (!updatedCalendar) throw new NotFoundException(`Calendar not found`);
     return updatedCalendar;
   }
+
+  async addGuest(
+    calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    const calendar: FullCalendarDto = await this.findById(calendarId);
+
+    calendar.users = await this.ownershipService.addGuest(
+      calendar.users,
+      userId,
+    );
+
+    return await this.update(calendar as UpdateCalendarDto);
+  }
 }

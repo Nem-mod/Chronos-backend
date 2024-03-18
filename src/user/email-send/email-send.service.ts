@@ -3,7 +3,7 @@ import { JwtService, JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt';
 import { SendLinkDto } from './dto/send-link.dto';
 import { SendGridService } from '@anchan828/nest-sendgrid';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { VerifyPayloadDto } from '../../auth/dto/verify-payload.dto';
 
 @Injectable()
 export class EmailSendService {
@@ -14,12 +14,12 @@ export class EmailSendService {
   ) {}
 
   async prepareLink(
-    payload: JwtPayloadDto,
+    payload: Object,
     linkInfo: SendLinkDto,
     options: JwtSignOptions,
     replaceWord: string,
   ): Promise<SendLinkDto> {
-    const token = this.jwtService.sign(payload, options);
+    const token: string = this.jwtService.sign(payload, options);
     linkInfo.returnUrl = linkInfo.returnUrl.replace(replaceWord, token);
     return linkInfo;
   }

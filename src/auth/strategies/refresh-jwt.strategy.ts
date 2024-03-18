@@ -5,7 +5,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
 import { Request as RequestType } from 'express';
 import { AuthService } from '../auth.service';
-import { JwtPayloadDto } from '../../user/email-send/dto/jwt-payload.dto';
+import { VerifyPayloadDto } from '../dto/verify-payload.dto';
 import { FullUserDto } from '../../user/dto/full-user.dto';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
 
   async validate(
     req: RequestType,
-    payload: JwtPayloadDto,
+    payload: VerifyPayloadDto,
   ): Promise<FullUserDto> {
     await this.authService.validateRefresh(
       RefreshJwtStrategy.extractJwtFromCookies(req),

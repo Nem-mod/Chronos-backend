@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { CalendarService } from './calendar/calendar.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
@@ -14,13 +18,17 @@ import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
 import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
 import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { User } from '../user/models/user.model';
-import { JwtPayloadDto } from '../user/email-send/dto/jwt-payload.dto';
+import { VerifyPayloadDto } from '../auth/dto/verify-payload.dto';
 import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { EmailSendService } from '../user/email-send/email-send.service';
+import { InvitePayloadDto } from './calendar/dto/invite-payload.dto';
+import { CalendarList } from './calendar-list/models/calendar-list.model';
 
 @Injectable()
 export class CalendarSystemService {
+  private expiredInviteTokens: Set<string> = new Set();
+
   constructor(
     private readonly configService: ConfigService,
     private readonly timezoneService: TimezonesService,
@@ -63,12 +71,17 @@ export class CalendarSystemService {
   async sendGuestInvitation(
     calendarId: CreateCalendarDto[`_id`],
     linkInfo: SendLinkDto,
+    senderName: CreateUserDto[`username`],
   ): Promise<void> {
     const user: User = await this.userService.findByUsername(linkInfo.username);
-    // TODO: check here if the user already has this calendar
+    const calendar: FullCalendarDto =
+      await this.calendarService.findById(calendarId);
+
+    if (await this.calendarListService.containsCalendar(user._id, calendarId))
+      throw new ConflictException(`User is already guest of this calendar`);
 
     linkInfo = await this.emailSendService.prepareLink(
-      { username: user.username, sub: calendarId } as JwtPayloadDto,
+      { userId: user._id, calendarId } as InvitePayloadDto,
       linkInfo,
       this.configService.get(`jwt.invite`),
       `inviteToken`,
@@ -76,19 +89,43 @@ export class CalendarSystemService {
 
     await this.emailSendService.sendEmail(
       user.email,
-      this.configService.get(`api.sendgrid.verify-template`),
-      { link: linkInfo.returnUrl },
+      this.configService.get(`api.sendgrid.invitation-template`), //TODO: create new template for invitations
+      {
+        calendarName: calendar.name,
+        ownerName: senderName,
+        link: linkInfo.returnUrl,
+      },
     );
   }
 
   async validateGuestInvitation(userId: CreateUserDto[`_id`], token: string) {
-    const payload: JwtPayloadDto =
+    const payload: InvitePayloadDto =
       await this.emailSendService.validateTokenFromEmail(
         token,
         this.configService.get(`jwt.invite`),
       );
-    // TODO: check here if the user in with correct username
-    return payload;
+
+    if (userId.toString() !== payload.userId.toString())
+      throw new ForbiddenException(`This invitation isn't for you`);
+    if (
+      await this.calendarListService.containsCalendar(
+        userId,
+        payload.calendarId,
+      )
+    )
+      throw new ConflictException(`You are already guest of this calendar`);
+
+    this.expiredInviteTokens.add(token);
+
+    const calendarEntry: FullCalendarEntryDto =
+      await this.calendarEntryService.createCalendarEntry({
+        calendar: payload.calendarId,
+      });
+    await this.calendarListService.addCalendarEntryToList(
+      calendarEntry,
+      userId,
+    );
+    await this.calendarService.addGuest(payload.calendarId, userId);
   }
 
   async deleteCalendar(calendarId: CreateCalendarDto[`_id`]): Promise<void> {
