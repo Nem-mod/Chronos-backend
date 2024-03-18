@@ -5,10 +5,10 @@ export class UpdateOwnershipDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  owners: CreateUserDto[`username`][] = [];
+  owners?: CreateUserDto[`username`][] = [];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  guests: CreateUserDto[`username`][] = [];
+  guests?: CreateUserDto[`username`][] = [];
 }

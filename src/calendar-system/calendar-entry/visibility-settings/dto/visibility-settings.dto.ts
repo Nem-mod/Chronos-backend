@@ -1,5 +1,11 @@
 import { Prop } from '@nestjs/mongoose';
-import { IsBoolean, IsHexColor, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsHexColor,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class VisibilitySettingsDto {
   @IsOptional()
@@ -12,5 +18,6 @@ export class VisibilitySettingsDto {
 
   @IsOptional()
   @IsString()
+  @MinLength(3)
   name?: string;
 }

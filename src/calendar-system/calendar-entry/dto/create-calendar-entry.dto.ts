@@ -4,6 +4,7 @@ import { RemindSettings } from '../remind-settings/models/remind-settings.model'
 import { VisibilitySettings } from '../visibility-settings/models/visibility-settings.model';
 import {
   IsDefined,
+  IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
@@ -17,8 +18,8 @@ export class CreateCalendarEntryDto {
   @IsString()
   _id?: string;
 
-  @IsDefined()
   @IsString()
+  @IsNotEmpty()
   calendar: FullCalendarDto | CreateCalendarDto[`_id`];
 
   @IsOptional()

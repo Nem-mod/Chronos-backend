@@ -2,6 +2,7 @@ import { Prop } from '@nestjs/mongoose';
 import {
   IsDefined,
   IsEmail,
+  IsNotEmpty,
   IsOptional,
   IsString,
   IsStrongPassword,
@@ -15,8 +16,9 @@ export class CreateUserDto {
   @IsString()
   _id?: string;
 
-  @IsDefined()
   @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
   username: string;
 
   @MinLength(PSW_MIN_LEN, { message: `Min password length is ${PSW_MIN_LEN}` })

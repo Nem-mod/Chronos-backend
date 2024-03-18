@@ -17,18 +17,17 @@ export class CreateCalendarDto {
   @IsString()
   _id?: string;
 
-  @IsDefined()
-  @MinLength(3)
   @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
   name: string;
 
   @IsOptional()
   @IsString()
-  description: string;
+  description?: string;
 
-  @IsDefined()
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   timezone: Timezone | TimezonteDto[`_id`];
 
   // @ValidateNested({ each: true })

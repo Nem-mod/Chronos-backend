@@ -6,10 +6,10 @@ import { FullUserDto } from '../../../user/dto/full-user.dto';
 import { CreateUserDto } from '../../../user/dto/create-user.dto';
 import { FullCalendarEntryDto } from '../../calendar-entry/dto/full-calendar-entry.dto';
 import { CreateCalendarEntryDto } from '../../calendar-entry/dto/create-calendar-entry.dto';
-import { IsDefined, IsOptional, IsString } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCalendarListDto {
-  @IsDefined()
   @IsString()
-  _id?: FullUserDto | CreateUserDto[`_id`];
+  @IsNotEmpty()
+  _id: FullUserDto | CreateUserDto[`_id`];
 }
