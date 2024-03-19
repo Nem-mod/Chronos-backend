@@ -1,7 +1,7 @@
 import { FullCalendarDto } from '../../calendar/dto/full-calendar.dto';
 import { CreateCalendarDto } from '../../calendar/dto/create-calendar.dto';
-import { RemindSettings } from '../remind-settings/models/remind-settings.model';
-import { VisibilitySettings } from '../visibility-settings/models/visibility-settings.model';
+import { RemindSettings } from '../../settings/remind/models/remind-settings.model';
+import { VisibilitySettings } from '../../settings/visibility/models/visibility-settings.model';
 import {
   IsDefined,
   IsNotEmpty,
@@ -10,8 +10,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { RemindSettingsDto } from '../remind-settings/dto/remind-settings.dto';
-import { VisibilitySettingsDto } from '../visibility-settings/dto/visibility-settings.dto';
+import { RemindSettingsDto } from '../../settings/remind/dto/remind-settings.dto';
+import { VisibilitySettingsDto } from '../../settings/visibility/dto/visibility-settings.dto';
 
 export class CreateCalendarEntryDto {
   @IsOptional()

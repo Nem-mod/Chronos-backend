@@ -20,19 +20,23 @@ import {
 import {
   RemindSettings,
   RemindSettingsSchema,
-} from './calendar-entry/remind-settings/models/remind-settings.model';
+} from './settings/remind/models/remind-settings.model';
 import {
   VisibilitySettings,
   VisibilitySettingsSchema,
-} from './calendar-entry/visibility-settings/models/visibility-settings.model';
-import { RemindSettingsService } from './calendar-entry/remind-settings/remind-settings.service';
-import { VisibilitySettingsService } from './calendar-entry/visibility-settings/visibility-settings.service';
+} from './settings/visibility/models/visibility-settings.model';
+import { RemindSettingsService } from './settings/remind/remind-settings.service';
+import { VisibilitySettingsService } from './settings/visibility/visibility-settings.service';
 import { TimezonesService } from './calendar/timezone/timezones.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-owner.guard';
+import { EventController } from './event/event.controller';
+import { EventService } from './event/event.service';
+import { RecurrenceSettingsService } from './settings/recurrence/recurrence-settings.service';
+import { TaskSettingsService } from './settings/task/task-settings.service';
 
 @Module({
   imports: [
@@ -46,7 +50,7 @@ import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-
       { name: CalendarList.name, schema: CalendarListSchema },
     ]),
   ],
-  controllers: [CalendarSystemController],
+  controllers: [CalendarSystemController, EventController],
   providers: [
     CalendarService,
     RemindSettingsService,
@@ -57,7 +61,10 @@ import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-
     CalendarSystemService,
     CalendarOwnerGuard,
     CalendarEntryOwnerGuard,
+    EventService,
+    RecurrenceSettingsService,
+    TaskSettingsService,
   ],
-  exports: [CalendarSystemService],
+  exports: [CalendarSystemService, EventService],
 })
 export class CalendarSystemModule {}

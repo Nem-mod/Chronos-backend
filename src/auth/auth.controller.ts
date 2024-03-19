@@ -38,8 +38,12 @@ export class AuthController {
   @Post(`register`)
   async register(
     @Body() user: CreateUserDto,
-    @Body(`calendar`) calendar: CreateCalendarDto,
+    // @Body(`calendar`) calendar: CreateCalendarDto,
   ): Promise<FullUserDto> {
+    const calendar: CreateCalendarDto = {
+      name: `My default calendar`,
+      timezone: `Europe/Kyiv`,
+    }; // TODO: remove and ask user for default calendar
     return await this.authService.register(user, calendar);
   }
 
@@ -50,7 +54,10 @@ export class AuthController {
   }
 
   @Patch(`verify/validate-code`)
-  async validateVerify(@Query(`token`) token: string) {
+  async validateVerify(
+    @Request() req: RequestType,
+    @Query(`token`) token: string,
+  ) {
     await this.authService.validateVerifyEmail(token);
   }
 

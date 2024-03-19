@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { Calendar } from '../../calendar/models/calendar.model';
-import { RemindSettings } from '../remind-settings/models/remind-settings.model';
-import { VisibilitySettings } from '../visibility-settings/models/visibility-settings.model';
+import { RemindSettings } from '../../settings/remind/models/remind-settings.model';
+import { VisibilitySettings } from '../../settings/visibility/models/visibility-settings.model';
 
 @Schema()
 export class CalendarEntry extends Document {

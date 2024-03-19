@@ -49,6 +49,7 @@ export class CalendarSystemController {
     @Request() req: RequestType,
     @Body() calendar: CreateCalendarDto,
   ): Promise<FullCalendarDto> {
+    // TODO: create timezone optional, get timezone by ip if undefined
     return await this.calendarSystemService.createOwnCalendar(
       calendar,
       req.user._id,

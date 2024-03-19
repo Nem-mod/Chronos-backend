@@ -4,10 +4,10 @@ import { CalendarEntry } from './models/calendar-entry.model';
 import { Model } from 'mongoose';
 import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
 import { FullCalendarEntryDto } from './dto/full-calendar-entry.dto';
-import { RemindSettings } from './remind-settings/models/remind-settings.model';
-import { VisibilitySettings } from './visibility-settings/models/visibility-settings.model';
-import { RemindSettingsDto } from './remind-settings/dto/remind-settings.dto';
-import { VisibilitySettingsDto } from './visibility-settings/dto/visibility-settings.dto';
+import { RemindSettings } from '../settings/remind/models/remind-settings.model';
+import { VisibilitySettings } from '../settings/visibility/models/visibility-settings.model';
+import { RemindSettingsDto } from '../settings/remind/dto/remind-settings.dto';
+import { VisibilitySettingsDto } from '../settings/visibility/dto/visibility-settings.dto';
 import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
 
 @Injectable()
