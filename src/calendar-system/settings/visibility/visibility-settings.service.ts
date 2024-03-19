@@ -1,4 +1,4 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class VisibilitySettingsService {}
+export class VisibilitySettingsService {} //TODO: put here createModel function

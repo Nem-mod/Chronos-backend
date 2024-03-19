@@ -11,6 +11,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { IsOneOrNoneFieldPresent } from '../validators/IsOneOrNoneFieldPresent';
+import { FrequencyEnum } from '../enums/frequency.enum';
 
 export class CreateRecurrenceSettingsDto {
   @IsEnum(FrequencyEnum)
@@ -21,19 +22,18 @@ export class CreateRecurrenceSettingsDto {
   interval: number;
 
   @IsBoolean()
+  @IsOneOrNoneFieldPresent(['count', 'until'])
   isNeverStop: boolean;
 
   @IsOptional()
-  @ValidateIf((o) => !o.isNeverStop)
-  @IsOneOrNoneFieldPresent(['count', 'until'])
   @IsInt()
   @Min(1)
+  @ValidateIf((o) => !o.isNeverStop)
   count?: number;
 
   @IsOptional()
-  @ValidateIf((o) => !o.isNeverStop)
-  @IsOneOrNoneFieldPresent(['count', 'until'])
   @IsDate()
+  @ValidateIf((o) => !o.isNeverStop)
   until?: Date;
 
   @IsOptional()

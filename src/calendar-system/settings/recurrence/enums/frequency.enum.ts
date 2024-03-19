@@ -1,6 +1,6 @@
-enum FrequencyEnum {
-  DAILY,
-  WEEKLY,
-  MONTHLY,
-  YEARLY,
+export enum FrequencyEnum {
+  DAILY = `DAILY`,
+  WEEKLY = `WEEKLY`,
+  MONTHLY = `MONTHLY`,
+  YEARLY = `YEARLY`,
 }

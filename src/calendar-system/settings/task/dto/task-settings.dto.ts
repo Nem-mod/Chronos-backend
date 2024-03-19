@@ -1,5 +1,12 @@
 import { Prop } from '@nestjs/mongoose';
-import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
+import { PriorityEnum } from '../enums/priority.enum';
 
 export class TaskSettingsDto {
   @IsOptional()

@@ -30,7 +30,7 @@ export class CalendarOwnerGuard implements CanActivate {
   }
 
   async getCalendarFromRequest(req: RequestType): Promise<FullCalendarDto> {
-    const calendarId = req.body._id;
+    const calendarId = req.body._id || req.body.calendar;
     return await this.calendarService.findById(calendarId as string);
   }
 }

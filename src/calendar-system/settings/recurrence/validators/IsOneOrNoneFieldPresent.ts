@@ -23,6 +23,10 @@ export function IsOneOrNoneFieldPresent(
           ).length;
           return presentedCount <= 1;
         },
+
+        defaultMessage(args: ValidationArguments) {
+          return `Only one of '${properties.join("', '")}' can be present`;
+        },
       },
     });
   };

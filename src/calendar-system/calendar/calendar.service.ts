@@ -1,16 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Timezone } from './timezone/models/timezone.model';
+import { Timezone } from '../timezone/models/timezone.model';
 import { Model } from 'mongoose';
 import { FullCalendarDto } from './dto/full-calendar.dto';
 import { CreateCalendarDto } from './dto/create-calendar.dto';
 import { Calendar } from './models/calendar.model';
-import { FullUserDto } from '../../user/dto/full-user.dto';
 import { OwnershipService } from '../../user/ownership/ownership.service';
 import { Ownership } from '../../user/ownership/models/ownership.model';
-import { TimezonesService } from './timezone/timezones.service';
-import { CalendarEntryService } from '../calendar-entry/calendar-entry.service';
-import { CalendarListService } from '../calendar-list/calendar-list.service';
+import { TimezonesService } from '../timezone/timezones.service';
 import { CreateUserDto } from '../../user/dto/create-user.dto';
 import { UpdateCalendarDto } from './dto/update-calendar.dto';
 

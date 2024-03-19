@@ -11,7 +11,7 @@ import { CalendarListService } from './calendar-list/calendar-list.service';
 import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 import { FullCalendarDto } from './calendar/dto/full-calendar.dto';
 import { FullUserDto } from '../user/dto/full-user.dto';
-import { TimezonesService } from './calendar/timezone/timezones.service';
+import { TimezonesService } from './timezone/timezones.service';
 import { FullCalendarListDto } from './calendar-list/dto/full-calendar-list.dto';
 import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.dto';
 import { OwnershipService } from '../user/ownership/ownership.service';

@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { FrequencyEnum } from '../enums/frequency.enum';
 
 @Schema()
 export class RecurrenceSettings extends Document {
@@ -12,10 +13,10 @@ export class RecurrenceSettings extends Document {
   @Prop({ required: true })
   isNeverStop: boolean;
 
-  @Prop({ required: true })
+  @Prop({ default: null })
   count: number;
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date, default: null })
   until: Date;
 
   @Prop({ default: [] })

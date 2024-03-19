@@ -3,10 +3,7 @@ import { CalendarSystemController } from './calendar-system.controller';
 import { CalendarService } from './calendar/calendar.service';
 import mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Timezone,
-  TimezoneSchema,
-} from './calendar/timezone/models/timezone.model';
+import { Timezone, TimezoneSchema } from './timezone/models/timezone.model';
 import { UserModule } from '../user/user.module';
 import { Calendar, CalendarSchema } from './calendar/models/calendar.model';
 import {
@@ -27,7 +24,7 @@ import {
 } from './settings/visibility/models/visibility-settings.model';
 import { RemindSettingsService } from './settings/remind/remind-settings.service';
 import { VisibilitySettingsService } from './settings/visibility/visibility-settings.service';
-import { TimezonesService } from './calendar/timezone/timezones.service';
+import { TimezonesService } from './timezone/timezones.service';
 import { CalendarEntryService } from './calendar-entry/calendar-entry.service';
 import { CalendarListService } from './calendar-list/calendar-list.service';
 import { CalendarSystemService } from './calendar-system.service';
@@ -37,6 +34,15 @@ import { EventController } from './event/event.controller';
 import { EventService } from './event/event.service';
 import { RecurrenceSettingsService } from './settings/recurrence/recurrence-settings.service';
 import { TaskSettingsService } from './settings/task/task-settings.service';
+import {
+  TaskSettings,
+  TaskSettingsSchema,
+} from './settings/task/models/task.settings.model';
+import {
+  RecurrenceSettings,
+  RecurrenceSettingsSchema,
+} from './settings/recurrence/models/recurrence-settings.model';
+import { Event, EventSchema } from './event/models/event.model';
 
 @Module({
   imports: [
@@ -48,6 +54,9 @@ import { TaskSettingsService } from './settings/task/task-settings.service';
       { name: Calendar.name, schema: CalendarSchema },
       { name: CalendarEntry.name, schema: CalendarEntrySchema },
       { name: CalendarList.name, schema: CalendarListSchema },
+      { name: TaskSettings.name, schema: TaskSettingsSchema },
+      { name: RecurrenceSettings.name, schema: RecurrenceSettingsSchema },
+      { name: Event.name, schema: EventSchema },
     ]),
   ],
   controllers: [CalendarSystemController, EventController],
