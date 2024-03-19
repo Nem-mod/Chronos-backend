@@ -20,6 +20,7 @@ import { CalendarSystemService } from '../calendar-system/calendar-system.servic
 import { User } from '../user/models/user.model';
 import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { EmailSendService } from '../user/email-send/email-send.service';
+import { CreateCalendarDto } from '../calendar-system/calendar/dto/create-calendar.dto';
 
 @Injectable()
 export class AuthService {
@@ -54,9 +55,16 @@ export class AuthService {
     return tokens;
   }
 
-  async register(user: CreateUserDto): Promise<FullUserDto> {
+  async register(
+    user: CreateUserDto,
+    defaultCalendar: CreateCalendarDto,
+  ): Promise<FullUserDto> {
     const newUser: FullUserDto = await this.userService.create(user);
     await this.calendarSystemService.initCalendarList(newUser);
+    await this.calendarSystemService.createOwnCalendar(
+      defaultCalendar,
+      newUser._id,
+    );
 
     return newUser;
   }

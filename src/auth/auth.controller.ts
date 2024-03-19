@@ -23,6 +23,7 @@ import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { ConfigService } from '@nestjs/config';
 import { CredentialsDto } from './dto/credentials.dto';
+import { CreateCalendarDto } from '../calendar-system/calendar/dto/create-calendar.dto';
 
 @Controller({
   path: `auth`,
@@ -35,8 +36,11 @@ export class AuthController {
   ) {}
 
   @Post(`register`)
-  async register(@Body() user: CreateUserDto): Promise<FullUserDto> {
-    return await this.authService.register(user);
+  async register(
+    @Body() user: CreateUserDto,
+    @Body(`calendar`) calendar: CreateCalendarDto,
+  ): Promise<FullUserDto> {
+    return await this.authService.register(user, calendar);
   }
 
   @HttpCode(204)
@@ -118,7 +122,7 @@ export class AuthController {
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ) {
-    await this.authService.deleteProfile(req.user); // TODO: unsubscribe from all events on account deletion
+    await this.authService.deleteProfile(req.user);
     await this.authService.deleteAuthCookie(res);
   }
 }

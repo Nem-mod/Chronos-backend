@@ -128,4 +128,6 @@ export class CalendarSystemController {
   ): Promise<FullCalendarEntryDto> {
     return await this.calendarSystemService.updateCalendarEntry(calendarEntry);
   }
+
+  // TODO: Promote guest to owner on another owner request
 }

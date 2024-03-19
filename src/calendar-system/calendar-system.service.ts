@@ -27,6 +27,7 @@ import { EmailSendService } from '../user/email-send/email-send.service';
 import { InvitePayloadDto } from './calendar/dto/invite-payload.dto';
 import { CalendarList } from './calendar-list/models/calendar-list.model';
 import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
+import { CreateCalendarListDto } from './calendar-list/dto/create-calendar-list.dto';
 
 @Injectable()
 export class CalendarSystemService {
