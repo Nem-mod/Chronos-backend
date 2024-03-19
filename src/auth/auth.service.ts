@@ -131,7 +131,8 @@ export class AuthService {
     return this.userService.update(currentUser._id, user);
   }
 
-  async deleteProfile(user: FullUserDto): Promise<FullUserDto> {
-    return await this.userService.remove(user._id);
+  async deleteProfile(user: FullUserDto): Promise<void> {
+    await this.userService.remove(user._id);
+    await this.calendarSystemService.unsubscribeFromAllCalendars(user._id);
   }
 }

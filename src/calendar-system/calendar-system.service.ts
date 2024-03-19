@@ -167,6 +167,22 @@ export class CalendarSystemService {
     await this.calendarListService.clearListFromTombstones(userId);
   }
 
+  async unsubscribeFromAllCalendars(
+    userId: CreateUserDto[`_id`],
+  ): Promise<void> {
+    const calendarList: FullCalendarListDto =
+      await this.calendarListService.getAllCalendarsFromList(userId);
+
+    for (const calendarEntry of calendarList.calendarEntries as FullCalendarEntryDto[]) {
+      await this.calendarService.removeGuestOrOwner(
+        (calendarEntry.calendar as FullCalendarDto)._id,
+        userId,
+      );
+      await this.calendarEntryService.delete(calendarEntry._id);
+    }
+    await this.calendarListService.clearListFromTombstones(userId);
+  }
+
   async getAllSubscribedCalendars(
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarListDto> {
