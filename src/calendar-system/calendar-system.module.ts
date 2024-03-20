@@ -30,7 +30,7 @@ import { CalendarListService } from './calendar-list/calendar-list.service';
 import { CalendarSystemService } from './calendar-system.service';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-owner.guard';
-import { EventController } from './event/event.controller';
+import { EventSystemController } from './event-system.controller';
 import { EventService } from './event/event.service';
 import { RecurrenceSettingsService } from './settings/recurrence/recurrence-settings.service';
 import { TaskSettingsService } from './settings/task/task-settings.service';
@@ -62,7 +62,7 @@ import { EventMemberGuard } from './event/guards/event-member.guard';
       { name: Event.name, schema: EventSchema },
     ]),
   ],
-  controllers: [CalendarSystemController, EventController],
+  controllers: [CalendarSystemController, EventSystemController],
   providers: [
     CalendarService,
     RemindSettingsService,
