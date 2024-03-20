@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -39,12 +39,27 @@ export class EventService {
   }
 
   async findById(id: CreateEventDto[`_id`]): Promise<Event> {
-    return this.eventModel.findById(id).populate(`calendar`);
+    const event: Event = await this.eventModel
+      .findById(id)
+      .populate(`calendar`);
+    if (!event) throw new NotFoundException(`Event not found`);
+    return event;
   }
 
   async findEventsByCalendar(
     calendarId: CreateCalendarDto[`_id`],
   ): Promise<Event[]> {
-    return this.eventModel.find({ calendar: calendarId });
+    const events: Event[] = await this.eventModel.find({
+      calendar: calendarId,
+    });
+    if (!events || events.length === 0)
+      throw new NotFoundException(`Events not found`);
+    return events;
+  }
+
+  async delete(id: CreateEventDto[`_id`]): Promise<FullEventDto> {
+    const event: Event = await this.eventModel.findByIdAndDelete(id);
+    if (!event) throw new NotFoundException(`Event not found`);
+    return event;
   }
 }

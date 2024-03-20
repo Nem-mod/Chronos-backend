@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AccessJwtAuthGuard } from '../auth/guards/access-jwt-auth.guard';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
 import { CreateEventDto } from './event/dto/create-event.dto';
@@ -36,5 +45,14 @@ export class EventSystemController {
     @Query(`calendarId`) calendarId: FullCalendarDto[`_id`],
   ): Promise<FullEventDto[]> {
     return await this.eventService.findEventsByCalendar(calendarId);
+  }
+
+  @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
+  @HttpCode(204)
+  @Delete()
+  async deleteEvent(
+    @Query(`eventId`) eventId: CreateEventDto[`_id`],
+  ): Promise<void> {
+    await this.eventService.delete(eventId);
   }
 }
