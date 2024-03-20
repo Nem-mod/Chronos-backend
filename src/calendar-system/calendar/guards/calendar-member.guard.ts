@@ -4,15 +4,13 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { Request as RequestType } from 'express';
+import { OwnershipService } from '../../../user/ownership/ownership.service';
 import { CalendarService } from '../calendar.service';
 import { FullCalendarDto } from '../dto/full-calendar.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { OwnershipService } from '../../../user/ownership/ownership.service';
 import { getCalendarIdFromRequest } from './getCalendarIdFromRequest';
 
 @Injectable()
-export class CalendarOwnerGuard implements CanActivate {
+export class CalendarMemberGuard implements CanActivate {
   constructor(
     private readonly calendarService: CalendarService,
     private readonly ownershipService: OwnershipService,
@@ -24,10 +22,8 @@ export class CalendarOwnerGuard implements CanActivate {
       await getCalendarIdFromRequest(req),
     );
 
-    if (!(await this.ownershipService.isOwner(calendar.users, req.user._id)))
-      throw new ForbiddenException(`You are not a calendar owner`);
-
-    req.calendar = calendar;
+    if (!(await this.ownershipService.isMember(calendar.users, req.user._id)))
+      throw new ForbiddenException(`You are not a calendar member`);
 
     return true;
   }

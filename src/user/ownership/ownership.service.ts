@@ -47,7 +47,7 @@ export class OwnershipService {
     });
   }
 
-  async isUserOwnerOrGuest(
+  async isMember(
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<'owner' | 'guest' | null> {
@@ -93,7 +93,7 @@ export class OwnershipService {
     return ownership;
   }
 
-  async removeGuestOrOwner(
+  async removeMember(
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<OwnershipDto> {

@@ -43,6 +43,9 @@ import {
   RecurrenceSettingsSchema,
 } from './settings/recurrence/models/recurrence-settings.model';
 import { Event, EventSchema } from './event/models/event.model';
+import { EventOwnerGuard } from './event/guards/event-owner.guard';
+import { CalendarMemberGuard } from './calendar/guards/calendar-member.guard';
+import { EventMemberGuard } from './event/guards/event-member.guard';
 
 @Module({
   imports: [
@@ -73,6 +76,9 @@ import { Event, EventSchema } from './event/models/event.model';
     EventService,
     RecurrenceSettingsService,
     TaskSettingsService,
+    EventOwnerGuard,
+    CalendarMemberGuard,
+    EventMemberGuard,
   ],
   exports: [CalendarSystemService, EventService],
 })

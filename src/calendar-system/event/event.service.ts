@@ -9,6 +9,7 @@ import { TaskSettings } from '../settings/task/models/task.settings.model';
 import { TaskSettingsService } from '../settings/task/task-settings.service';
 import { RecurrenceSettings } from '../settings/recurrence/models/recurrence-settings.model';
 import { RecurrenceSettingsService } from '../settings/recurrence/recurrence-settings.service';
+import { CreateCalendarDto } from '../calendar/dto/create-calendar.dto';
 
 @Injectable()
 export class EventService {
@@ -35,5 +36,15 @@ export class EventService {
     });
     await newEvent.save();
     return newEvent;
+  }
+
+  async findById(id: CreateEventDto[`_id`]): Promise<Event> {
+    return this.eventModel.findById(id).populate(`calendar`);
+  }
+
+  async findEventsByCalendar(
+    calendarId: CreateCalendarDto[`_id`],
+  ): Promise<Event[]> {
+    return this.eventModel.find({ calendar: calendarId });
   }
 }

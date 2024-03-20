@@ -83,7 +83,7 @@ export class CalendarService {
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
     const calendar: FullCalendarDto = await this.findById(calendarId);
-    calendar.users = await this.ownershipService.removeGuestOrOwner(
+    calendar.users = await this.ownershipService.removeMember(
       calendar.users,
       userId,
     );
