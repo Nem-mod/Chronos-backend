@@ -54,7 +54,10 @@ export class CalendarService {
   async update(calendar: UpdateCalendarDto): Promise<FullCalendarDto> {
     delete calendar.users;
 
-    await this.timezonesService.findTimezoneByCode(calendar.timezone as string);
+    if (calendar.timezone)
+      await this.timezonesService.findTimezoneByCode(
+        calendar.timezone as string,
+      );
 
     const updatedCalendar: Calendar =
       await this.calendarModel.findByIdAndUpdate(calendar._id, calendar, {

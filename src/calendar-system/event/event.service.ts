@@ -61,5 +61,5 @@ export class EventService {
     const event: Event = await this.eventModel.findByIdAndDelete(id);
     if (!event) throw new NotFoundException(`Event not found`);
     return event;
-  }
+  } // TODO add parentEventId
 }
