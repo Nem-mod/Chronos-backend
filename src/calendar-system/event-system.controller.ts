@@ -4,12 +4,15 @@ import {
   Delete,
   Get,
   HttpCode,
+  Patch,
   Post,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AccessJwtAuthGuard } from '../auth/guards/access-jwt-auth.guard';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
+import { Request as RequestType } from 'express';
 import { CreateEventDto } from './event/dto/create-event.dto';
 import { EventService } from './event/event.service';
 import { FullCalendarDto } from './calendar/dto/full-calendar.dto';
@@ -17,6 +20,10 @@ import { FullEventDto } from './event/dto/full-event.dto';
 import { EventOwnerGuard } from './event/guards/event-owner.guard';
 import { CalendarMemberGuard } from './calendar/guards/calendar-member.guard';
 import { EventMemberGuard } from './event/guards/event-member.guard';
+import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.dto';
+import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 
 @Controller({
   path: 'event',
@@ -54,5 +61,36 @@ export class EventSystemController {
     @Query(`eventId`) eventId: CreateEventDto[`_id`],
   ): Promise<void> {
     await this.eventService.delete(eventId);
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
+  @HttpCode(204)
+  @Post(`invite/send-code`)
+  async sendShareInvitation(
+    // TODO: Test it
+    @Request() req: RequestType, //TODO: create decorator that extract user from request (and calendar, and event)
+    @Query(`eventId`) eventId: CreateEventDto[`_id`],
+    @Body() linkInfo: SendLinkDto,
+  ): Promise<void> {
+    await this.eventService.sendShareInvitation(
+      eventId,
+      linkInfo,
+      req.user.username,
+    );
+  }
+
+  @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @Patch(`invite/validate-code`)
+  async validateShareInvitation(
+    // TODO: Test it
+    @Request() req: RequestType,
+    @Query(`token`) token: string,
+    @Query(`calendarId`) calendareId: CreateCalendarDto[`_id`],
+  ): Promise<FullEventDto> {
+    return await this.eventService.validateShareInvitation(
+      req.user._id,
+      calendareId,
+      token,
+    );
   }
 }

@@ -81,7 +81,10 @@ export class CalendarSystemController {
   async validateGuestInvitation(
     @Request() req: RequestType,
     @Query(`token`) token: string,
-  ) {
+  ): Promise<{
+    calendar: FullCalendarDto;
+    calendarEntry: FullCalendarEntryDto;
+  }> {
     return await this.calendarSystemService.validateGuestInvitation(
       req.user._id,
       token,

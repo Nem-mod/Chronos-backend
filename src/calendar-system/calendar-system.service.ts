@@ -24,7 +24,7 @@ import { VerifyPayloadDto } from '../auth/dto/verify-payload.dto';
 import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { EmailSendService } from '../user/email-send/email-send.service';
-import { InvitePayloadDto } from './calendar/dto/invite-payload.dto';
+import { CalendarInvitePayloadDto } from './calendar/dto/calendar-invite-payload.dto';
 import { CalendarList } from './calendar-list/models/calendar-list.model';
 import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
 import { CreateCalendarListDto } from './calendar-list/dto/create-calendar-list.dto';
@@ -88,15 +88,15 @@ export class CalendarSystemService {
       throw new ConflictException(`User is already guest of this calendar`);
 
     linkInfo = await this.emailSendService.prepareLink(
-      { userId: user._id, calendarId } as InvitePayloadDto,
+      { userId: user._id, calendarId } as CalendarInvitePayloadDto,
       linkInfo,
-      this.configService.get(`jwt.invite`),
+      this.configService.get(`jwt.calendarInvite`),
       `inviteToken`,
     );
 
     await this.emailSendService.sendEmail(
       user.email,
-      this.configService.get(`api.sendgrid.invitation-template`),
+      this.configService.get(`api.sendgrid.calendar-invitation-template`),
       {
         calendarName: calendar.name,
         ownerName: senderName,
@@ -105,11 +105,17 @@ export class CalendarSystemService {
     );
   }
 
-  async validateGuestInvitation(userId: CreateUserDto[`_id`], token: string) {
-    const payload: InvitePayloadDto =
+  async validateGuestInvitation(
+    userId: CreateUserDto[`_id`],
+    token: string,
+  ): Promise<{
+    calendar: FullCalendarDto;
+    calendarEntry: FullCalendarEntryDto;
+  }> {
+    const payload: CalendarInvitePayloadDto =
       await this.emailSendService.validateTokenFromEmail(
         token,
-        this.configService.get(`jwt.invite`),
+        this.configService.get(`jwt.calendarInvite`),
       );
 
     if (userId.toString() !== payload.userId.toString())
@@ -124,17 +130,23 @@ export class CalendarSystemService {
     )
       throw new ConflictException(`You are already guest of this calendar`);
 
+    const calendar: FullCalendarDto = await this.calendarService.findById(
+      payload.calendarId,
+    );
+
     this.expiredInviteTokens.add(token);
 
     const calendarEntry: FullCalendarEntryDto =
       await this.calendarEntryService.createCalendarEntry({
-        calendar: payload.calendarId,
+        calendar: calendar._id,
       });
     await this.calendarListService.addCalendarEntryToList(
       calendarEntry,
       userId,
     );
-    await this.calendarService.addGuest(payload.calendarId, userId);
+    await this.calendarService.addGuest(calendar._id, userId);
+
+    return { calendar, calendarEntry };
   }
 
   async deleteCalendar(calendarId: CreateCalendarDto[`_id`]): Promise<void> {

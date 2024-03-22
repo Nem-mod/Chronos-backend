@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { Request as RequestType } from 'express';
 import { CalendarService } from '../calendar.service';
 import { FullCalendarDto } from '../dto/full-calendar.dto';
 import { InjectModel } from '@nestjs/mongoose';

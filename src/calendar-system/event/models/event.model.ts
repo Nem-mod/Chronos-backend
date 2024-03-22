@@ -9,6 +9,13 @@ import { Calendar } from '../../calendar/models/calendar.model';
 export class Event extends Document {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
+    ref: Event.name,
+    default: null,
+  })
+  parentEvent: Event;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
     ref: Calendar.name,
     required: true,
   })
