@@ -47,7 +47,10 @@ export class CalendarSystemService {
   async createOwnCalendar(
     calendar: CreateCalendarDto,
     userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
+  ): Promise<{
+    calendar: FullCalendarDto;
+    calendarEntry: FullCalendarEntryDto;
+  }> {
     const newCalendar: FullCalendarDto = await this.calendarService.create(
       calendar,
       userId,
@@ -61,7 +64,7 @@ export class CalendarSystemService {
       userId,
     );
 
-    return newCalendar;
+    return { calendar: newCalendar, calendarEntry };
   }
 
   async initCalendarList(user: FullUserDto): Promise<FullCalendarListDto> {

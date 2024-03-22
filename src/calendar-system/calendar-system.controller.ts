@@ -48,7 +48,11 @@ export class CalendarSystemController {
   async createCalendar(
     @Request() req: RequestType,
     @Body() calendar: CreateCalendarDto,
-  ): Promise<FullCalendarDto> {
+  ): Promise<{
+    calendar: FullCalendarDto;
+    calendarEntry: FullCalendarEntryDto;
+  }> {
+    // TODO: Test for returning calendar and its entry
     // TODO: create timezone optional, get timezone by ip if undefined
     return await this.calendarSystemService.createOwnCalendar(
       calendar,
