@@ -25,6 +25,11 @@ import { CalendarInvitePayloadDto } from '../calendar/dto/calendar-invite-payloa
 import { FullCalendarDto } from '../calendar/dto/full-calendar.dto';
 import { CalendarService } from '../calendar/calendar.service';
 import { EventInviteInfoDto } from './dto/event-invite-info.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { TaskSettingsDto } from '../settings/task/dto/task-settings.dto';
+import { FullRecurrenceSettingsDto } from '../settings/recurrence/dto/full-recurrence-settings.dto';
+import { validate } from 'class-validator';
+import { CreateRecurrenceSettingsDto } from '../settings/recurrence/dto/create-recurrence-settings.dto';
 
 @Injectable()
 export class EventService {
@@ -86,6 +91,41 @@ export class EventService {
     const event: Event = await this.eventModel.findByIdAndDelete(id);
     if (!event) throw new NotFoundException(`Event not found`);
     return event;
+  }
+
+  async update(event: UpdateEventDto): Promise<FullEventDto> {
+    delete event.parentEvent;
+
+    if (event.timezone)
+      await this.timezonesService.findTimezoneByCode(event.timezone as string);
+
+    const oldEvent: Event = await this.findById(event._id);
+    const oldRecurrenceSettings: CreateRecurrenceSettingsDto =
+      oldEvent.recurrenceSettings;
+    let taskSettings: TaskSettings;
+    let recurrenceSettings: RecurrenceSettings = null;
+
+    taskSettings = await this.taskSettingsService.createModel(
+      event.taskSettings,
+    );
+
+    if (event.recurrenceSettings) {
+      recurrenceSettings = await this.recurrenceSettingsService.createModel({
+        ...oldRecurrenceSettings,
+        ...event.recurrenceSettings,
+      });
+    }
+    // recurrenceSettings = null;
+
+    delete event.recurrenceSettings;
+
+    const updatedEvent: Event = await this.eventModel.findByIdAndUpdate(
+      event._id,
+      { ...event, taskSettings, recurrenceSettings },
+      { new: true },
+    );
+    if (!updatedEvent) throw new NotFoundException(`Event not found`);
+    return updatedEvent;
   }
 
   async sendShareInvitation(

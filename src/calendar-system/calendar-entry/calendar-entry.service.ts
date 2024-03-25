@@ -6,29 +6,29 @@ import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
 import { FullCalendarEntryDto } from './dto/full-calendar-entry.dto';
 import { RemindSettings } from '../settings/remind/models/remind-settings.model';
 import { VisibilitySettings } from '../settings/visibility/models/visibility-settings.model';
-import { RemindSettingsDto } from '../settings/remind/dto/remind-settings.dto';
-import { VisibilitySettingsDto } from '../settings/visibility/dto/visibility-settings.dto';
 import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
+import { VisibilitySettingsService } from '../settings/visibility/visibility-settings.service';
+import { RemindSettingsService } from '../settings/remind/remind-settings.service';
+import { UpdateCalendarDto } from '../calendar/dto/update-calendar.dto';
 
 @Injectable()
 export class CalendarEntryService {
   constructor(
     @InjectModel(CalendarEntry.name)
     private readonly calendarEntryModel: Model<CalendarEntry>,
-    @InjectModel(RemindSettings.name)
-    private readonly remindSettingsModel: Model<RemindSettings>,
-    @InjectModel(VisibilitySettings.name)
-    private readonly visibilitySettingsModel: Model<VisibilitySettings>,
+    private readonly visibilitySettingsService: VisibilitySettingsService,
+    private readonly remindSettingsService: RemindSettingsService,
   ) {}
 
   async createCalendarEntry(
     calendarEntry: CreateCalendarEntryDto,
   ): Promise<FullCalendarEntryDto> {
-    const remindSettings: RemindSettings = await this.createRemindSettingsModel(
-      calendarEntry.remindSettings,
-    );
+    const remindSettings: RemindSettings =
+      await this.remindSettingsService.createModel(
+        calendarEntry.remindSettings,
+      );
     const visibilitySettings: VisibilitySettings =
-      await this.createVisibilitySettingsModel(
+      await this.visibilitySettingsService.createModel(
         calendarEntry.visibilitySettings,
       );
     const newCalendarEntry: CalendarEntry = new this.calendarEntryModel({
@@ -41,18 +41,6 @@ export class CalendarEntryService {
     return newCalendarEntry;
   }
 
-  async createRemindSettingsModel(
-    remindSettings: RemindSettingsDto,
-  ): Promise<RemindSettings> {
-    return new this.remindSettingsModel(remindSettings);
-  }
-
-  async createVisibilitySettingsModel(
-    visibilitySettings: VisibilitySettingsDto,
-  ): Promise<VisibilitySettings> {
-    return new this.visibilitySettingsModel(visibilitySettings);
-  }
-
   async findById(id: CreateCalendarEntryDto[`_id`]): Promise<CalendarEntry> {
     const calendarEntry: CalendarEntry =
       await this.calendarEntryModel.findById(id);
@@ -63,10 +51,19 @@ export class CalendarEntryService {
   async update(
     calendarEntry: UpdateCalendarEntryDto,
   ): Promise<FullCalendarEntryDto> {
+    const remindSettings: RemindSettings =
+      await this.remindSettingsService.createModel(
+        calendarEntry.remindSettings,
+      );
+    const visibilitySettings: VisibilitySettings =
+      await this.visibilitySettingsService.createModel(
+        calendarEntry.visibilitySettings,
+      );
+
     const newCalendarEntry: CalendarEntry =
       await this.calendarEntryModel.findByIdAndUpdate(
         calendarEntry._id,
-        calendarEntry,
+        { ...calendarEntry, remindSettings, visibilitySettings },
         { new: true },
       );
     if (!newCalendarEntry)

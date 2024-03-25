@@ -46,6 +46,7 @@ import { Event, EventSchema } from './event/models/event.model';
 import { EventOwnerGuard } from './event/guards/event-owner.guard';
 import { CalendarMemberGuard } from './calendar/guards/calendar-member.guard';
 import { EventMemberGuard } from './event/guards/event-member.guard';
+import { UpdateEventDto } from './event/dto/update-event.dto';
 
 @Module({
   imports: [

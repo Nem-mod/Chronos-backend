@@ -13,8 +13,8 @@ export class RecurrenceSettingsService {
 
   async createModel(
     recurrentSettings: CreateRecurrenceSettingsDto,
-  ): Promise<RecurrenceSettings | null> {
-    if (!recurrentSettings) return null;
+  ): Promise<RecurrenceSettings | undefined> {
+    if (!recurrentSettings) return undefined;
     return new this.recurrentSettingsModel(recurrentSettings);
   }
 }

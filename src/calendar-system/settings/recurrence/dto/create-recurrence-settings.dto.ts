@@ -14,6 +14,15 @@ import { IsOneOrNoneFieldPresent } from '../validators/IsOneOrNoneFieldPresent';
 import { FrequencyEnum } from '../enums/frequency.enum';
 
 export class CreateRecurrenceSettingsDto {
+  static getObject(
+    recurrenceSettings: CreateRecurrenceSettingsDto,
+  ): CreateRecurrenceSettingsDto {
+    const newObject: CreateRecurrenceSettingsDto =
+      new CreateRecurrenceSettingsDto();
+    Object.assign(newObject, recurrenceSettings);
+    return newObject;
+  }
+
   @IsEnum(FrequencyEnum)
   frequency: FrequencyEnum;
 
@@ -25,15 +34,15 @@ export class CreateRecurrenceSettingsDto {
   @IsOneOrNoneFieldPresent(['count', 'until'])
   isNeverStop: boolean;
 
-  @IsOptional()
+  // @IsOptional()
   @IsInt()
   @Min(1)
-  @ValidateIf((o) => !o.isNeverStop)
+  @ValidateIf((o) => !o.isNeverStop && !o.until && !o.count)
   count?: number;
 
-  @IsOptional()
+  // @IsOptional()
   @IsDate()
-  @ValidateIf((o) => !o.isNeverStop)
+  @ValidateIf((o) => !o.isNeverStop && !o.until && !o.count)
   until?: Date;
 
   @IsOptional()

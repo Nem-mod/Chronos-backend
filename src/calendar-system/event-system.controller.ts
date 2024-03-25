@@ -4,11 +4,13 @@ import {
   Delete,
   Get,
   HttpCode,
+  ImATeapotException,
   Patch,
   Post,
   Query,
   Request,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AccessJwtAuthGuard } from '../auth/guards/access-jwt-auth.guard';
 import { CalendarOwnerGuard } from './calendar/guards/calendar-owner.guard';
@@ -27,6 +29,9 @@ import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 import { UpdateEventDto } from './event/dto/update-event.dto';
 import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
 import { EventInviteInfoDto } from './event/dto/event-invite-info.dto';
+import { RecurrenceSettings } from './settings/recurrence/models/recurrence-settings.model';
+import { CreateRecurrenceSettingsDto } from './settings/recurrence/dto/create-recurrence-settings.dto';
+import { validate } from 'class-validator';
 
 @Controller({
   path: 'event',
@@ -58,6 +63,31 @@ export class EventSystemController {
   }
 
   @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
+  @Patch()
+  async updateEvent(@Body() event: UpdateEventDto): Promise<FullEventDto> {
+    const oldEvent = await this.eventService.findById(event._id);
+
+    if (!oldEvent.recurrenceSettings && event.recurrenceSettings) {
+      try {
+        const validationPipe = new ValidationPipe({ transform: true });
+        // const test = CreateRecurrenceSettingsDto.getObject(
+        //   event.recurrenceSettings as CreateRecurrenceSettingsDto,
+        // );
+
+        // console.log(await validate(test));
+        await validationPipe.transform(event.recurrenceSettings, {
+          metatype: CreateRecurrenceSettingsDto,
+          type: `body`,
+        });
+      } catch (err) {
+        throw err;
+      }
+    }
+
+    return await this.eventService.update(event);
+  }
+
+  @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
   @HttpCode(204)
   @Delete()
   async deleteEvent(
@@ -70,10 +100,8 @@ export class EventSystemController {
   @HttpCode(204)
   @Post(`invite/send-code`)
   async sendShareInvitation(
-    // TODO: Test it
     @Request() req: RequestType, //TODO: create decorator that extract user from request (and calendar, and event)
     @Body() inviteInfo: EventInviteInfoDto,
-    // @Body() linkInfo: SendLinkDto,
   ): Promise<void> {
     await this.eventService.sendShareInvitation(inviteInfo, req.user.username);
   }
@@ -81,7 +109,6 @@ export class EventSystemController {
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
   @Patch(`invite/validate-code`)
   async validateShareInvitation(
-    // TODO: Test it
     @Request() req: RequestType,
     @Query(`token`) token: string,
     @Query(`calendarId`) calendarId: CreateCalendarDto[`_id`],

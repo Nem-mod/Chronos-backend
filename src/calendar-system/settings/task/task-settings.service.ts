@@ -13,8 +13,8 @@ export class TaskSettingsService {
 
   async createModel(
     taskSettings: TaskSettingsDto,
-  ): Promise<TaskSettings | null> {
-    if (!taskSettings) return null;
+  ): Promise<TaskSettings | undefined> {
+    if (!taskSettings) return undefined;
     return new this.taskSettingsModel(taskSettings);
   }
 }
