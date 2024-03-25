@@ -26,6 +26,7 @@ import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.d
 import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
 import { UpdateEventDto } from './event/dto/update-event.dto';
 import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
+import { EventInviteInfoDto } from './event/dto/event-invite-info.dto';
 
 @Controller({
   path: 'event',
@@ -71,14 +72,10 @@ export class EventSystemController {
   async sendShareInvitation(
     // TODO: Test it
     @Request() req: RequestType, //TODO: create decorator that extract user from request (and calendar, and event)
-    @Body(`event`) event: UpdateEventDto,
-    @Body() linkInfo: SendLinkDto,
+    @Body() inviteInfo: EventInviteInfoDto,
+    // @Body() linkInfo: SendLinkDto,
   ): Promise<void> {
-    await this.eventService.sendShareInvitation(
-      event._id,
-      linkInfo,
-      req.user.username,
-    );
+    await this.eventService.sendShareInvitation(inviteInfo, req.user.username);
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)

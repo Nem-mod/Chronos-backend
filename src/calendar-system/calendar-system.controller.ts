@@ -24,6 +24,7 @@ import { CalendarEntryOwnerGuard } from './calendar-entry/guards/calendar-entry-
 import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.dto';
 import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
 import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
+import { CalendarInviteInfoDto } from './calendar/dto/calendar-invite-info.dto';
 
 @Controller({
   path: `calendar`,
@@ -64,18 +65,15 @@ export class CalendarSystemController {
   @Post(`invite/send-code`)
   async sendGuestInvitation(
     @Request() req: RequestType,
-    @Body() calendar: UpdateCalendarDto,
-    @Body() linkInfo: SendLinkDto,
+    @Body() linkInfo: CalendarInviteInfoDto,
   ): Promise<void> {
     await this.calendarSystemService.sendGuestInvitation(
-      calendar._id,
       linkInfo,
       req.user.username,
     );
   }
 
   @UseGuards(AccessJwtAuthGuard)
-  @HttpCode(204)
   @Patch(`invite/validate-code`)
   async validateGuestInvitation(
     @Request() req: RequestType,

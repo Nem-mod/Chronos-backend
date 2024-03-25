@@ -28,6 +28,7 @@ import { CalendarInvitePayloadDto } from './calendar/dto/calendar-invite-payload
 import { CalendarList } from './calendar-list/models/calendar-list.model';
 import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
 import { CreateCalendarListDto } from './calendar-list/dto/create-calendar-list.dto';
+import { CalendarInviteInfoDto } from './calendar/dto/calendar-invite-info.dto';
 
 @Injectable()
 export class CalendarSystemService {
@@ -76,20 +77,25 @@ export class CalendarSystemService {
   }
 
   async sendGuestInvitation(
-    calendarId: CreateCalendarDto[`_id`],
-    linkInfo: SendLinkDto,
+    inviteInfo: CalendarInviteInfoDto,
     senderName: CreateUserDto[`username`],
   ): Promise<void> {
-    const user: User = await this.userService.findByUsername(linkInfo.username);
-    const calendar: FullCalendarDto =
-      await this.calendarService.findById(calendarId);
+    const user: User = await this.userService.findByUsername(
+      inviteInfo.username,
+    );
+    const calendar: FullCalendarDto = await this.calendarService.findById(
+      inviteInfo.calendar as string,
+    );
 
-    if (await this.calendarListService.containsCalendar(user._id, calendarId))
+    if (await this.calendarListService.containsCalendar(user._id, calendar._id))
       throw new ConflictException(`User is already guest of this calendar`);
 
-    linkInfo = await this.emailSendService.prepareLink(
-      { userId: user._id, calendarId } as CalendarInvitePayloadDto,
-      linkInfo,
+    inviteInfo.returnUrl = await this.emailSendService.prepareLink(
+      {
+        userId: user._id,
+        calendarId: calendar._id,
+      } as CalendarInvitePayloadDto,
+      inviteInfo,
       this.configService.get(`jwt.calendarInvite`),
       `inviteToken`,
     );
@@ -100,7 +106,7 @@ export class CalendarSystemService {
       {
         calendarName: calendar.name,
         ownerName: senderName,
-        link: linkInfo.returnUrl,
+        link: inviteInfo.returnUrl,
       },
     );
   }

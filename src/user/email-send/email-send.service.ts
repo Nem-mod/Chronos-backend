@@ -18,10 +18,10 @@ export class EmailSendService {
     linkInfo: SendLinkDto,
     options: JwtSignOptions,
     replaceWord: string,
-  ): Promise<SendLinkDto> {
+  ): Promise<SendLinkDto[`returnUrl`]> {
     const token: string = this.jwtService.sign(payload, options);
     linkInfo.returnUrl = linkInfo.returnUrl.replace(replaceWord, token);
-    return linkInfo;
+    return linkInfo.returnUrl;
   }
 
   async sendEmail(email: string, templateId: string, data: {}): Promise<void> {

@@ -24,6 +24,7 @@ import { ConfigService } from '@nestjs/config';
 import { CalendarInvitePayloadDto } from '../calendar/dto/calendar-invite-payload.dto';
 import { FullCalendarDto } from '../calendar/dto/full-calendar.dto';
 import { CalendarService } from '../calendar/calendar.service';
+import { EventInviteInfoDto } from './dto/event-invite-info.dto';
 
 @Injectable()
 export class EventService {
@@ -42,7 +43,7 @@ export class EventService {
 
   async create(event: CreateEventDto): Promise<FullEventDto> {
     delete event._id; // TODO: delete _id in every create function
-    console.log(event);
+
     await this.timezonesService.findTimezoneByCode(event.timezone as string);
     const taskSettings = await this.taskSettingsService.createModel(
       event.taskSettings,
@@ -88,19 +89,18 @@ export class EventService {
   }
 
   async sendShareInvitation(
-    eventId: CreateEventDto[`_id`],
-    linkInfo: SendLinkDto,
+    inviteInfo: EventInviteInfoDto,
     senderName: CreateUserDto[`username`],
   ) {
-    const user = await this.userService.findByUsername(linkInfo.username);
-    const event = await this.findById(eventId);
+    const user = await this.userService.findByUsername(inviteInfo.username);
+    const event = await this.findById(inviteInfo.event as string);
 
-    linkInfo = await this.emailSendService.prepareLink(
+    inviteInfo.returnUrl = await this.emailSendService.prepareLink(
       {
         userId: user._id,
         eventId: event._id,
       } as EventInvitePayloadDto,
-      linkInfo,
+      inviteInfo,
       this.configService.get(`jwt.eventInvite`),
       `inviteToken`,
     );
@@ -111,7 +111,7 @@ export class EventService {
       {
         eventName: event.name,
         ownerName: senderName,
-        link: linkInfo.returnUrl,
+        link: inviteInfo.returnUrl,
       },
     );
   }

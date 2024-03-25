@@ -73,7 +73,7 @@ export class AuthService {
     const user: User = await this.userService.findByUsername(linkInfo.username);
     if (user.verified) throw new ForbiddenException(`User already verified`);
 
-    linkInfo = await this.emailSendService.prepareLink(
+    linkInfo.returnUrl = await this.emailSendService.prepareLink(
       { username: user.username, sub: user._id } as VerifyPayloadDto,
       linkInfo,
       this.configService.get(`jwt.verify`),
