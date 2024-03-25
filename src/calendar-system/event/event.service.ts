@@ -41,6 +41,8 @@ export class EventService {
   ) {}
 
   async create(event: CreateEventDto): Promise<FullEventDto> {
+    delete event._id; // TODO: delete _id in every create function
+    console.log(event);
     await this.timezonesService.findTimezoneByCode(event.timezone as string);
     const taskSettings = await this.taskSettingsService.createModel(
       event.taskSettings,
@@ -55,8 +57,6 @@ export class EventService {
       recurrenceSettings,
     });
     await newEvent.save();
-    newEvent.parentEvent = newEvent._id;
-    await newEvent.save();
 
     return newEvent;
   }
@@ -64,7 +64,8 @@ export class EventService {
   async findById(id: CreateEventDto[`_id`]): Promise<Event> {
     const event: Event = await this.eventModel
       .findById(id)
-      .populate(`calendar`);
+      .populate(`calendar`)
+      .lean();
     if (!event) throw new NotFoundException(`Event not found`);
     return event;
   }
@@ -106,13 +107,13 @@ export class EventService {
 
     await this.emailSendService.sendEmail(
       user.email,
-      this.configService.get(`api.sendgrid.calendar-invitation-template`),
+      this.configService.get(`api.sendgrid.event-invitation-template`),
       {
-        calendarName: event.name,
+        eventName: event.name,
         ownerName: senderName,
         link: linkInfo.returnUrl,
       },
-    ); // TODO: create new template for event invitation
+    );
   }
 
   async validateShareInvitation(
@@ -139,6 +140,10 @@ export class EventService {
 
     this.expiredInviteTokens.add(token);
 
-    return await this.create({ ...event, calendar: calendar._id });
+    return await this.create({
+      ...event,
+      calendar: calendar._id,
+      parentEvent: event._id,
+    });
   }
 }

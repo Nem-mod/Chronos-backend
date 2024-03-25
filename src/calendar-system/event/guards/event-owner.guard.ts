@@ -30,7 +30,7 @@ export class EventOwnerGuard implements CanActivate {
         req.user._id,
       ))
     )
-      throw new ForbiddenException(`You are not a calendar owner`);
+      throw new ForbiddenException(`You are not a event's calendar owner`);
 
     req.event = event;
 

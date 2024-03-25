@@ -52,7 +52,6 @@ export class CalendarSystemController {
     calendar: FullCalendarDto;
     calendarEntry: FullCalendarEntryDto;
   }> {
-    // TODO: Test for returning calendar and its entry
     // TODO: create timezone optional, get timezone by ip if undefined
     return await this.calendarSystemService.createOwnCalendar(
       calendar,
@@ -95,6 +94,7 @@ export class CalendarSystemController {
   @HttpCode(204)
   @Delete()
   async deleteCalendar(@Body() calendar: UpdateCalendarDto) {
+    // TODO: delete events on delete calendar
     await this.calendarSystemService.deleteCalendar(calendar._id);
   }
 
@@ -105,6 +105,7 @@ export class CalendarSystemController {
     @Request() req: RequestType,
     @Body() calendarEntry: UpdateCalendarEntryDto,
   ) {
+    // TODO: Delete calendar if last user is unsubscribed
     await this.calendarSystemService.unsubscribeFromCalendar(
       req.user._id,
       calendarEntry._id,

@@ -24,6 +24,8 @@ import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.dto';
 import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
+import { UpdateEventDto } from './event/dto/update-event.dto';
+import { UpdateCalendarDto } from './calendar/dto/update-calendar.dto';
 
 @Controller({
   path: 'event',
@@ -63,17 +65,17 @@ export class EventSystemController {
     await this.eventService.delete(eventId);
   }
 
-  @UseGuards(AccessJwtAuthGuard)
+  @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
   @HttpCode(204)
   @Post(`invite/send-code`)
   async sendShareInvitation(
     // TODO: Test it
     @Request() req: RequestType, //TODO: create decorator that extract user from request (and calendar, and event)
-    @Query(`eventId`) eventId: CreateEventDto[`_id`],
+    @Body(`event`) event: UpdateEventDto,
     @Body() linkInfo: SendLinkDto,
   ): Promise<void> {
     await this.eventService.sendShareInvitation(
-      eventId,
+      event._id,
       linkInfo,
       req.user.username,
     );
@@ -85,11 +87,11 @@ export class EventSystemController {
     // TODO: Test it
     @Request() req: RequestType,
     @Query(`token`) token: string,
-    @Query(`calendarId`) calendareId: CreateCalendarDto[`_id`],
+    @Query(`calendarId`) calendarId: CreateCalendarDto[`_id`],
   ): Promise<FullEventDto> {
     return await this.eventService.validateShareInvitation(
       req.user._id,
-      calendareId,
+      calendarId,
       token,
     );
   }

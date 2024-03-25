@@ -20,6 +20,7 @@ import mongoose from 'mongoose';
 import { Calendar } from '../../calendar/models/calendar.model';
 import { FullCalendarDto } from '../../calendar/dto/full-calendar.dto';
 import { CreateCalendarDto } from '../../calendar/dto/create-calendar.dto';
+import { FullEventDto } from './full-event.dto';
 
 export class CreateEventDto {
   @IsOptional()
@@ -66,4 +67,9 @@ export class CreateEventDto {
   @ValidateNested({ each: true })
   @Type(() => CreateRecurrenceSettingsDto)
   recurrenceSettings?: CreateRecurrenceSettingsDto;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty() // TODO: Create validator for mongodb object ids
+  parentEvent: FullEventDto | FullEventDto[`_id`];
 }
