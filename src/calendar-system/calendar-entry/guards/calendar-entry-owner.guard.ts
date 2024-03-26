@@ -10,6 +10,7 @@ import { FullCalendarListDto } from '../../calendar-list/dto/full-calendar-list.
 import { CalendarEntryService } from '../calendar-entry.service';
 import { FullCalendarEntryDto } from '../dto/full-calendar-entry.dto';
 import { FullCalendarDto } from '../../calendar/dto/full-calendar.dto';
+import { getCalendarEntryFromRequest } from './getCalendarEntryIdFromRequest';
 
 @Injectable()
 export class CalendarEntryOwnerGuard implements CanActivate {
@@ -22,7 +23,9 @@ export class CalendarEntryOwnerGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const user = req.user;
     const calendarEntry: FullCalendarEntryDto =
-      await this.getCalendarEntryFromRequest(req);
+      await this.calendarEntryService.findById(
+        await getCalendarEntryFromRequest(req),
+      );
 
     if (
       !(await this.calendarListService.containsCalendarEntry(
@@ -35,10 +38,5 @@ export class CalendarEntryOwnerGuard implements CanActivate {
     req.calendarEntry = calendarEntry;
 
     return true;
-  }
-
-  async getCalendarEntryFromRequest(req: any): Promise<FullCalendarEntryDto> {
-    const calendarEntryId = req.body._id;
-    return await this.calendarEntryService.findById(calendarEntryId);
   }
 }

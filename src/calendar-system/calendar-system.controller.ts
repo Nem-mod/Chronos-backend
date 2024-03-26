@@ -25,6 +25,7 @@ import { FullCalendarEntryDto } from './calendar-entry/dto/full-calendar-entry.d
 import { UpdateCalendarEntryDto } from './calendar-entry/dto/update-calendar-entry.dto';
 import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { CalendarInviteInfoDto } from './calendar/dto/calendar-invite-info.dto';
+import { CalendarMemberGuard } from './calendar/guards/calendar-member.guard';
 
 @Controller({
   path: `calendar`,
@@ -91,22 +92,19 @@ export class CalendarSystemController {
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
   @HttpCode(204)
   @Delete()
-  async deleteCalendar(@Body() calendar: UpdateCalendarDto) {
+  async deleteCalendar(@Request() req: RequestType): Promise<void> {
     // TODO: delete events on delete calendar
-    await this.calendarSystemService.deleteCalendar(calendar._id);
+    await this.calendarSystemService.deleteCalendar(req.calendar._id);
   }
 
-  @UseGuards(AccessJwtAuthGuard)
+  @UseGuards(AccessJwtAuthGuard, CalendarEntryOwnerGuard)
   @HttpCode(204)
   @Delete(`unsubscribe`)
-  async unsubscribeFromCalendar(
-    @Request() req: RequestType,
-    @Body() calendarEntry: UpdateCalendarEntryDto,
-  ) {
+  async unsubscribeFromCalendar(@Request() req: RequestType) {
     // TODO: Delete calendar if last user is unsubscribed
     await this.calendarSystemService.unsubscribeFromCalendar(
       req.user._id,
-      calendarEntry._id,
+      req.calendarEntry._id,
     );
   }
 

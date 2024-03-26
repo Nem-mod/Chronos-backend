@@ -93,6 +93,10 @@ export class EventService {
     return event;
   }
 
+  async deleteEventsByCalendar(id: CreateCalendarDto[`_id`]): Promise<void> {
+    await this.eventModel.deleteMany({ calendar: id });
+  }
+
   async update(event: UpdateEventDto): Promise<FullEventDto> {
     delete event.parentEvent;
 
@@ -131,7 +135,7 @@ export class EventService {
   async sendShareInvitation(
     inviteInfo: EventInviteInfoDto,
     senderName: CreateUserDto[`username`],
-  ) {
+  ): Promise<void> {
     const user = await this.userService.findByUsername(inviteInfo.username);
     const event = await this.findById(inviteInfo.event as string);
 
@@ -160,7 +164,7 @@ export class EventService {
     userId: CreateUserDto[`_id`],
     calendarId: CreateCalendarDto[`_id`],
     token: string,
-  ) {
+  ): Promise<FullEventDto> {
     const payload: EventInvitePayloadDto =
       await this.emailSendService.validateTokenFromEmail(
         token,

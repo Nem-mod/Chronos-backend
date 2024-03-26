@@ -29,6 +29,7 @@ import { CalendarList } from './calendar-list/models/calendar-list.model';
 import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-entry.dto';
 import { CreateCalendarListDto } from './calendar-list/dto/create-calendar-list.dto';
 import { CalendarInviteInfoDto } from './calendar/dto/calendar-invite-info.dto';
+import { EventService } from './event/event.service';
 
 @Injectable()
 export class CalendarSystemService {
@@ -43,6 +44,7 @@ export class CalendarSystemService {
     private readonly calendarService: CalendarService,
     private readonly calendarEntryService: CalendarEntryService,
     private readonly calendarListService: CalendarListService,
+    private readonly eventService: EventService,
   ) {}
 
   async createOwnCalendar(
@@ -156,6 +158,8 @@ export class CalendarSystemService {
   }
 
   async deleteCalendar(calendarId: CreateCalendarDto[`_id`]): Promise<void> {
+    await this.eventService.deleteEventsByCalendar(calendarId);
+
     const calendar: FullCalendarDto =
       await this.calendarService.delete(calendarId);
     const allCalendarUserIds: CreateUserDto[`_id`][] =
