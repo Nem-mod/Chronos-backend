@@ -29,6 +29,7 @@ import { FullUserDto } from '../user/dto/full-user.dto';
 import { ReqCalendar } from './calendar/decorators/calendar.decorator';
 import { ReqCalendarEntry } from './calendar-entry/decorators/calendarEntry.decorator';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { CalendarMemberGuard } from './calendar/guards/calendar-member.guard';
 
 @Controller({
   path: `calendar`,
@@ -113,6 +114,22 @@ export class CalendarSystemController {
       user._id,
       calendarEntry._id,
     );
+  }
+
+  @UseGuards(AccessJwtAuthGuard, CalendarMemberGuard)
+  @Get()
+  async getCalendarById(
+    @ReqCalendar() calendar: FullCalendarDto,
+  ): Promise<FullCalendarDto> {
+    return calendar;
+  }
+
+  @UseGuards(AccessJwtAuthGuard, CalendarEntryOwnerGuard)
+  @Get(`entry`)
+  async getCalendarEntryById(
+    @ReqCalendarEntry() calendarEntry: FullCalendarEntryDto,
+  ): Promise<FullCalendarEntryDto> {
+    return calendarEntry;
   }
 
   @UseGuards(AccessJwtAuthGuard)
