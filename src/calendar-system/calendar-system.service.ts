@@ -138,7 +138,7 @@ export class CalendarSystemService {
     )
       throw new ConflictException(`You are already guest of this calendar`);
 
-    const calendar: FullCalendarDto = await this.calendarService.findById(
+    let calendar: FullCalendarDto = await this.calendarService.findById(
       payload.calendarId,
     );
 
@@ -152,7 +152,7 @@ export class CalendarSystemService {
       calendarEntry,
       userId,
     );
-    await this.calendarService.addGuest(calendar._id, userId);
+    calendar = await this.calendarService.addGuest(calendar._id, userId);
 
     return { calendar, calendarEntry };
   }
@@ -226,16 +226,31 @@ export class CalendarSystemService {
   }
 
   async promoteGuestToOwner(
-    userId: CreateUserDto[`_id`],
     calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
-    return await this.calendarService.addOwner(calendarId, userId);
+    return await this.calendarService.promoteGuestToOwner(calendarId, userId);
   }
 
-  async test() {
-    await this.calendarService.addGuest(
-      `6602d485e4abe4590c32fe85`,
-      `65f48d66c21594d3798a20a1`,
-    );
+  async demtoeOwnerToGuest(
+    calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    return await this.calendarService.demoteOwnerToGuest(calendarId, userId);
+  }
+
+  async kickMember(
+    calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    const calendarEntry =
+      await this.calendarListService.getCalendarEntryByCalendar(
+        userId,
+        calendarId,
+      );
+
+    await this.unsubscribeFromCalendar(userId, calendarEntry._id);
+
+    return await this.calendarService.findById(calendarId);
   }
 }

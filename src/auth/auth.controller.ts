@@ -133,4 +133,6 @@ export class AuthController {
     await this.authService.deleteProfile(req.user);
     await this.authService.deleteAuthCookie(res);
   }
+
+  // TODO: Get user/users by id
 }

@@ -86,12 +86,6 @@ export class OwnershipService {
     ownership: OwnershipDto,
     userId: CreateUserDto[`_id`],
   ): Promise<OwnershipDto> {
-    const guestLength = ownership.guests.length;
-    await this.removeGuest(ownership, userId);
-
-    if (ownership.guests.length === guestLength)
-      throw new NotFoundException(`User isn't guest`);
-
     ownership.owners = [...new Set([...ownership.owners, userId])]; //TODO: maybe just change to push because of bad performance
 
     return ownership;
@@ -137,17 +131,31 @@ export class OwnershipService {
     return ownership;
   }
 
-  // async promoteGuestToOwner(
-  //   ownership: OwnershipDto,
-  //   userId: CreateUserDto[`_id`],
-  // ): Promise<OwnershipDto> {
-  //   userId = userId.toString();
-  //
-  //   if (!this.isGuest(ownership, userId)) {
-  //     ownership = await this.removeGuest(ownership, userId)
-  //     ownership = await this.addOwner()
-  //   }
-  //
-  //   return ownership;
-  // }
+  async promoteGuestToOwner(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    if (await this.isGuest(ownership, userId)) {
+      ownership = await this.removeGuest(ownership, userId);
+      ownership = await this.addOwner(ownership, userId);
+    } else {
+      throw new NotFoundException(`User is not a guest`);
+    }
+
+    return ownership;
+  }
+
+  async demoteOwnerToGuest(
+    ownership: OwnershipDto,
+    userId: CreateUserDto[`_id`],
+  ): Promise<OwnershipDto> {
+    if (await this.isOwner(ownership, userId)) {
+      ownership = await this.removeOwner(ownership, userId);
+      ownership = await this.addGuest(ownership, userId);
+    } else {
+      throw new NotFoundException(`User is not an owner`);
+    }
+
+    return ownership;
+  }
 }

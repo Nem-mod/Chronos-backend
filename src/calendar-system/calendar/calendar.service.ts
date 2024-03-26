@@ -81,13 +81,27 @@ export class CalendarService {
     return await this.update(calendar as UpdateCalendarDto);
   }
 
-  async addOwner(
+  async promoteGuestToOwner(
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
     const calendar: FullCalendarDto = await this.findById(calendarId);
 
-    calendar.users = await this.ownershipService.addOwner(
+    calendar.users = await this.ownershipService.promoteGuestToOwner(
+      calendar.users,
+      userId,
+    );
+
+    return await this.update(calendar as UpdateCalendarDto);
+  }
+
+  async demoteOwnerToGuest(
+    calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    const calendar: FullCalendarDto = await this.findById(calendarId);
+
+    calendar.users = await this.ownershipService.demoteOwnerToGuest(
       calendar.users,
       userId,
     );
@@ -100,10 +114,12 @@ export class CalendarService {
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
     const calendar: FullCalendarDto = await this.findById(calendarId);
+
     calendar.users = await this.ownershipService.removeMember(
       calendar.users,
       userId,
     );
+
     return await this.update(calendar as UpdateCalendarDto);
   }
 }
