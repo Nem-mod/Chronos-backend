@@ -71,9 +71,23 @@ export class CalendarService {
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
-    const calendar: FullCalendarDto = await this.findById(calendarId);
+    let calendar: FullCalendarDto = await this.findById(calendarId);
 
     calendar.users = await this.ownershipService.addGuest(
+      calendar.users,
+      userId,
+    );
+
+    return await this.update(calendar as UpdateCalendarDto);
+  }
+
+  async addOwner(
+    calendarId: CreateCalendarDto[`_id`],
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    const calendar: FullCalendarDto = await this.findById(calendarId);
+
+    calendar.users = await this.ownershipService.addOwner(
       calendar.users,
       userId,
     );

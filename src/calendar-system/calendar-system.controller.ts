@@ -28,6 +28,7 @@ import { ReqUser } from '../auth/decorators/user.decorator';
 import { FullUserDto } from '../user/dto/full-user.dto';
 import { ReqCalendar } from './calendar/decorators/calendar.decorator';
 import { ReqCalendarEntry } from './calendar-entry/decorators/calendarEntry.decorator';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
 @Controller({
   path: `calendar`,
@@ -102,7 +103,7 @@ export class CalendarSystemController {
 
   @UseGuards(AccessJwtAuthGuard, CalendarEntryOwnerGuard)
   @HttpCode(204)
-  @Delete(`unsubscribe`)
+  @Delete(`entry`)
   async unsubscribeFromCalendar(
     @ReqUser() user: FullUserDto,
     @ReqCalendarEntry() calendarEntry: FullCalendarEntryDto,
@@ -138,5 +139,21 @@ export class CalendarSystemController {
     return await this.calendarSystemService.updateCalendarEntry(calendarEntry);
   }
 
-  // TODO: Promote guest to owner on another owner request
+  @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @Patch(`ownership/promote`)
+  async promoteGuestToOwner(
+    @ReqCalendar() calendar: FullCalendarDto,
+    @Query(`userId`) userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    // TODO: Promote guest to owner on another owner request
+    return await this.calendarSystemService.promoteGuestToOwner(
+      userId,
+      calendar._id,
+    );
+  }
+
+  @Post(`test`)
+  async test() {
+    await this.calendarSystemService.test();
+  }
 }

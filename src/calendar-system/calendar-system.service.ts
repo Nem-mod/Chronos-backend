@@ -224,4 +224,18 @@ export class CalendarSystemService {
   ): Promise<FullCalendarEntryDto> {
     return await this.calendarEntryService.update(calendarEntry);
   }
+
+  async promoteGuestToOwner(
+    userId: CreateUserDto[`_id`],
+    calendarId: CreateCalendarDto[`_id`],
+  ): Promise<FullCalendarDto> {
+    return await this.calendarService.addOwner(calendarId, userId);
+  }
+
+  async test() {
+    await this.calendarService.addGuest(
+      `6602d485e4abe4590c32fe85`,
+      `65f48d66c21594d3798a20a1`,
+    );
+  }
 }
