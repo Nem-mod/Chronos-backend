@@ -16,13 +16,13 @@ export class CalendarEntry extends Document {
 
   @Prop({
     type: RemindSettings,
-    required: true,
+    default: null,
   })
   remindSettings: RemindSettings;
 
   @Prop({
     type: VisibilitySettings,
-    required: true,
+    default: null,
   })
   visibilitySettings: VisibilitySettings;
 }

@@ -32,6 +32,10 @@ import { EventInviteInfoDto } from './event/dto/event-invite-info.dto';
 import { RecurrenceSettings } from './settings/recurrence/models/recurrence-settings.model';
 import { CreateRecurrenceSettingsDto } from './settings/recurrence/dto/create-recurrence-settings.dto';
 import { validate } from 'class-validator';
+import { ReqUser } from '../auth/decorators/user.decorator';
+import { FullUserDto } from '../user/dto/full-user.dto';
+import { ReqEvent } from './event/decorators/event.decorator';
+import { ReqCalendar } from './calendar/decorators/calendar.decorator';
 
 @Controller({
   path: 'event',
@@ -48,18 +52,16 @@ export class EventSystemController {
 
   @UseGuards(AccessJwtAuthGuard, EventMemberGuard)
   @Get()
-  async getEventById(
-    @Query(`eventId`) eventId: CreateEventDto[`_id`],
-  ): Promise<FullEventDto> {
-    return await this.eventService.findById(eventId);
+  async getEventById(@ReqEvent() event: FullEventDto): Promise<FullEventDto> {
+    return await this.eventService.findById(event._id);
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarMemberGuard)
   @Get(`all`)
   async getAllCalendarEvents(
-    @Query(`calendarId`) calendarId: FullCalendarDto[`_id`],
+    @ReqCalendar() calendar: FullCalendarDto,
   ): Promise<FullEventDto[]> {
-    return await this.eventService.findEventsByCalendar(calendarId);
+    return await this.eventService.findEventsByCalendar(calendar._id);
   }
 
   @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
@@ -70,11 +72,7 @@ export class EventSystemController {
     if (!oldEvent.recurrenceSettings && event.recurrenceSettings) {
       try {
         const validationPipe = new ValidationPipe({ transform: true });
-        // const test = CreateRecurrenceSettingsDto.getObject(
-        //   event.recurrenceSettings as CreateRecurrenceSettingsDto,
-        // );
 
-        // console.log(await validate(test));
         await validationPipe.transform(event.recurrenceSettings, {
           metatype: CreateRecurrenceSettingsDto,
           type: `body`,
@@ -90,32 +88,30 @@ export class EventSystemController {
   @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
   @HttpCode(204)
   @Delete()
-  async deleteEvent(
-    @Query(`eventId`) eventId: CreateEventDto[`_id`],
-  ): Promise<void> {
-    await this.eventService.delete(eventId);
+  async deleteEvent(@ReqEvent() event: FullEventDto): Promise<void> {
+    await this.eventService.delete(event._id);
   }
 
   @UseGuards(AccessJwtAuthGuard, EventOwnerGuard)
   @HttpCode(204)
   @Post(`invite/send-code`)
   async sendShareInvitation(
-    @Request() req: RequestType, //TODO: create decorator that extract user from request (and calendar, and event)
+    @ReqUser() user: FullUserDto,
     @Body() inviteInfo: EventInviteInfoDto,
   ): Promise<void> {
-    await this.eventService.sendShareInvitation(inviteInfo, req.user.username);
+    await this.eventService.sendShareInvitation(inviteInfo, user.username);
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
   @Patch(`invite/validate-code`)
   async validateShareInvitation(
-    @Request() req: RequestType,
+    @ReqUser() user: FullUserDto,
+    @ReqCalendar() calendar: FullCalendarDto,
     @Query(`token`) token: string,
-    @Query(`calendarId`) calendarId: CreateCalendarDto[`_id`],
   ): Promise<FullEventDto> {
     return await this.eventService.validateShareInvitation(
-      req.user._id,
-      calendarId,
+      user._id,
+      calendar._id,
       token,
     );
   }

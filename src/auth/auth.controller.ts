@@ -24,6 +24,7 @@ import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { ConfigService } from '@nestjs/config';
 import { CredentialsDto } from './dto/credentials.dto';
 import { CreateCalendarDto } from '../calendar-system/calendar/dto/create-calendar.dto';
+import { ReqUser } from './decorators/user.decorator';
 
 @Controller({
   path: `auth`,
@@ -74,14 +75,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post(`login`)
   async login(
-    @Request() req: RequestType,
+    @ReqUser() user: FullUserDto,
     @Response({ passthrough: true }) res: ResponseType,
   ): Promise<FullUserDto> {
-    const tokens = await this.authService.login(req.user);
+    const tokens = await this.authService.login(user);
 
     await this.authService.setAuthCookies(res, tokens);
 
-    return req.user;
+    return user;
   }
 
   @UseGuards(RefreshJwtAuthGuard)
@@ -109,17 +110,17 @@ export class AuthController {
 
   @UseGuards(AccessJwtAuthGuard)
   @Get(`profile`)
-  async getProfile(@Request() req: RequestType): Promise<FullUserDto> {
-    return req.user;
+  async getProfile(@ReqUser() user: FullUserDto): Promise<FullUserDto> {
+    return user;
   }
 
   @UseGuards(AccessJwtAuthGuard)
   @Patch(`profile`)
   async editUser(
-    @Request() req: RequestType,
+    @ReqUser() currentUser: FullUserDto,
     @Body() user: UpdateUserDto,
   ): Promise<FullUserDto> {
-    return await this.authService.editProfile(req.user, user);
+    return await this.authService.editProfile(currentUser, user);
   }
 
   @UseGuards(AccessJwtAuthGuard)
