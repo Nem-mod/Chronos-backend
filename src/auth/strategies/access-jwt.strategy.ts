@@ -24,12 +24,14 @@ export class AccessJwtStrategy extends PassportStrategy(Strategy, `accessJwt`) {
   }
 
   async validate(payload: VerifyPayloadDto): Promise<FullUserDto> {
-    const user = await this.userService.findById(payload.sub);
+    try {
+      const user = await this.userService.findById(payload.sub);
+      const { password, ...rest } = user;
 
-    if (!user) throw new UnauthorizedException();
-    const { password, ...rest } = user;
-
-    return rest;
+      return rest;
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
   }
 
   private static extractJwtFromCookies(req: RequestType) {

@@ -41,7 +41,7 @@ export class AuthService {
     try {
       const user: User = await this.userService.findByUsername(username);
 
-      if (user && (await bcrypt.compareSync(pass, user.password))) {
+      if (await bcrypt.compareSync(pass, user.password)) {
         const { password, ...result } = user;
         return result;
       }
@@ -130,6 +130,11 @@ export class AuthService {
   async deleteAuthCookie(res: ResponseType): Promise<void> {
     res.clearCookie('refreshToken');
     res.clearCookie('accessToken');
+  }
+
+  async findUserById(userId: string): Promise<FullUserDto> {
+    const { password, ...user } = await this.userService.findById(userId);
+    return user;
   }
 
   async editProfile(

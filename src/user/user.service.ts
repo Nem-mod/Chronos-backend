@@ -43,14 +43,16 @@ export class UserService {
     return newUser;
   }
 
-  async findByUsername(
-    username: CreateUserDto[`username`],
-  ): Promise<User | null> {
-    return this.userModel.findOne({ username }).lean();
+  async findByUsername(username: CreateUserDto[`username`]): Promise<User> {
+    const user: User = await this.userModel.findOne({ username }).lean();
+    if (!user) throw new NotFoundException(`User not found`);
+    return user;
   }
 
-  async findById(id: CreateUserDto[`_id`]): Promise<User | null> {
-    return this.userModel.findById(id).lean();
+  async findById(id: CreateUserDto[`_id`]): Promise<User> {
+    const user: User = await this.userModel.findById(id).lean();
+    if (!user) throw new NotFoundException(`User not found`);
+    return user;
   }
 
   async update(

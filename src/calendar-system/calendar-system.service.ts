@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CalendarService } from './calendar/calendar.service';
@@ -181,11 +182,11 @@ export class CalendarSystemService {
         calendarEntryId,
       ))
     )
-      throw new BadRequestException(`You have no calendar entry with this Id`);
+      throw new NotFoundException(`You have no calendar entry with this Id`);
     const calendarEntry: FullCalendarEntryDto =
       await this.calendarEntryService.findById(calendarEntryId);
 
-    await this.calendarService.removeGuestOrOwner(
+    await this.calendarService.removeMember(
       calendarEntry.calendar as string,
       userId,
     );
@@ -200,7 +201,7 @@ export class CalendarSystemService {
       await this.calendarListService.getAllCalendarsFromList(userId);
 
     for (const calendarEntry of calendarList.calendarEntries as FullCalendarEntryDto[]) {
-      await this.calendarService.removeGuestOrOwner(
+      await this.calendarService.removeMember(
         (calendarEntry.calendar as FullCalendarDto)._id,
         userId,
       );
@@ -243,7 +244,7 @@ export class CalendarSystemService {
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
-    const calendarEntry =
+    const calendarEntry: FullCalendarEntryDto =
       await this.calendarListService.getCalendarEntryByCalendar(
         userId,
         calendarId,

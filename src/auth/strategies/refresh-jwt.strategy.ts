@@ -33,13 +33,16 @@ export class RefreshJwtStrategy extends PassportStrategy(
     req: RequestType,
     payload: VerifyPayloadDto,
   ): Promise<FullUserDto> {
-    await this.authService.validateRefresh(
-      RefreshJwtStrategy.extractJwtFromCookies(req),
-    );
-    const user = await this.userService.findById(payload.sub);
-    if (!user) throw new UnauthorizedException();
+    try {
+      await this.authService.validateRefresh(
+        RefreshJwtStrategy.extractJwtFromCookies(req),
+      );
+      const user = await this.userService.findById(payload.sub);
 
-    return user;
+      return user;
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
   }
 
   private static extractJwtFromCookies(req: RequestType) {

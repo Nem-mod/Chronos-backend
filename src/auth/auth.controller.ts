@@ -109,6 +109,14 @@ export class AuthController {
   }
 
   @UseGuards(AccessJwtAuthGuard)
+  @Get(`user`)
+  async getUser(
+    @Query(`userId`) userId: CreateUserDto[`_id`],
+  ): Promise<FullUserDto> {
+    return await this.authService.findUserById(userId);
+  }
+
+  @UseGuards(AccessJwtAuthGuard)
   @Get(`profile`)
   async getProfile(@ReqUser() user: FullUserDto): Promise<FullUserDto> {
     return user;
@@ -133,6 +141,4 @@ export class AuthController {
     await this.authService.deleteProfile(req.user);
     await this.authService.deleteAuthCookie(res);
   }
-
-  // TODO: Get user/users by id
 }

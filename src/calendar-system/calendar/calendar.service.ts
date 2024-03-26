@@ -109,7 +109,7 @@ export class CalendarService {
     return await this.update(calendar as UpdateCalendarDto);
   }
 
-  async removeGuestOrOwner(
+  async removeMember(
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarDto> {
