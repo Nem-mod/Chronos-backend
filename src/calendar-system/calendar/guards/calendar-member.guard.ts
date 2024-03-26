@@ -25,6 +25,8 @@ export class CalendarMemberGuard implements CanActivate {
     if (!(await this.ownershipService.isMember(calendar.users, req.user._id)))
       throw new ForbiddenException(`You are not a calendar member`);
 
+    req.calendar = calendar;
+
     return true;
   }
 }
