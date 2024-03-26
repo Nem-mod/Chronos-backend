@@ -17,4 +17,8 @@ export class VisibilitySettingsService {
     if (!visibilitySettings) return undefined;
     return new this.visibilitySettingsModel(visibilitySettings);
   }
+
+  async createDefaultModel(): Promise<VisibilitySettings> {
+    return new this.visibilitySettingsModel();
+  }
 } //TODO: put here createModel function

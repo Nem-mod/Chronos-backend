@@ -24,13 +24,9 @@ export class CalendarEntryService {
     calendarEntry: CreateCalendarEntryDto,
   ): Promise<FullCalendarEntryDto> {
     const remindSettings: RemindSettings =
-      await this.remindSettingsService.createModel(
-        calendarEntry.remindSettings,
-      );
+      await this.remindSettingsService.createDefaultModel();
     const visibilitySettings: VisibilitySettings =
-      await this.visibilitySettingsService.createModel(
-        calendarEntry.visibilitySettings,
-      );
+      await this.visibilitySettingsService.createDefaultModel();
     const newCalendarEntry: CalendarEntry = new this.calendarEntryModel({
       ...calendarEntry,
       remindSettings,

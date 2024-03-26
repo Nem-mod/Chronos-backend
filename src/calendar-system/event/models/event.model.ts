@@ -27,7 +27,7 @@ export class Event extends Document {
   @Prop({ default: null })
   description: string;
 
-  @Prop({ type: TaskSettings, default: null })
+  @Prop({ type: TaskSettings, required: true })
   taskSettings: TaskSettings;
 
   @Prop({ required: true })
@@ -46,7 +46,7 @@ export class Event extends Document {
   @Prop({ required: true })
   end: Date;
 
-  @Prop({ type: RecurrenceSettings, default: null })
+  @Prop({ type: RecurrenceSettings, required: true })
   recurrenceSettings: RecurrenceSettings;
 }
 

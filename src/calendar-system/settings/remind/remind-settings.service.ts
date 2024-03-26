@@ -17,4 +17,8 @@ export class RemindSettingsService {
     if (!remindSettings) return undefined;
     return new this.remindSettingsModel(remindSettings);
   }
+
+  async createDefaultModel(): Promise<RemindSettings> {
+    return new this.remindSettingsModel();
+  }
 } //TODO: put here createModel function
