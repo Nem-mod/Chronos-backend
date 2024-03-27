@@ -31,6 +31,8 @@ import { CreateCalendarEntryDto } from './calendar-entry/dto/create-calendar-ent
 import { CreateCalendarListDto } from './calendar-list/dto/create-calendar-list.dto';
 import { CalendarInviteInfoDto } from './calendar/dto/calendar-invite-info.dto';
 import { EventService } from './event/event.service';
+import { FullEventDto } from './event/dto/full-event.dto';
+import { CreateEventDto } from './event/dto/create-event.dto';
 
 @Injectable()
 export class CalendarSystemService {
@@ -214,6 +216,49 @@ export class CalendarSystemService {
     userId: CreateUserDto[`_id`],
   ): Promise<FullCalendarListDto> {
     return await this.calendarListService.getAllCalendarsFromList(userId);
+  }
+
+  async getAllCalendarEntriesToNotify() {
+    const currentDate = new Date();
+    const allEvents: FullEventDto[] = await this.eventService.findAll();
+    const calendarToAllCalendarEntryMap: Map<
+      CreateCalendarDto[`_id`],
+      FullCalendarEntryDto[]
+    > = new Map();
+    const eventToNotifyEmails: Map<
+      CreateEventDto[`_id`],
+      Set<CreateUserDto[`email`]>
+    > = new Map();
+
+    for (const event of allEvents) {
+      if (!calendarToAllCalendarEntryMap.has(event.calendar as string)) {
+        calendarToAllCalendarEntryMap.set(
+          event.calendar as string,
+          await this.calendarEntryService.getCalendarEntriesByCalendar(
+            event.calendar as string,
+          ),
+        );
+      }
+
+      for (const calendarEntry of calendarToAllCalendarEntryMap.get(
+        event.calendar as string,
+      )) {
+        for (const seconds of calendarEntry.remindSettings?.secondsBefore) {
+          const notifyStart = event.start.getTime() - seconds * 1000;
+          const notifyEnd = event.start.getTime() - seconds * 1000 + 1000 * 60;
+          if (
+            notifyStart <= currentDate.getTime() &&
+            notifyEnd > currentDate.getTime()
+          ) {
+            let saved: Set<CreateUserDto[`email`]> = eventToNotifyEmails.get(event._id);
+
+            if (!savedEmails)
+              savedEmails = new Set()
+            savedEmails.add(calendarEntry.)
+          }
+        }
+      }
+    }
   }
 
   async updateCalendar(calendar: UpdateCalendarDto): Promise<FullCalendarDto> {

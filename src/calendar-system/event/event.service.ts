@@ -85,6 +85,11 @@ export class EventService {
     return events;
   }
 
+  async findAll(): Promise<FullEventDto[]> {
+    const events: Event[] = await this.eventModel.find();
+    return events;
+  }
+
   async delete(id: CreateEventDto[`_id`]): Promise<FullEventDto> {
     const event: Event = await this.eventModel.findByIdAndDelete(id);
     if (!event) throw new NotFoundException(`Event not found`);

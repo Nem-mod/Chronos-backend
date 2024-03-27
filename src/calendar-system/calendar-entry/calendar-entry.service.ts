@@ -10,6 +10,7 @@ import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
 import { VisibilitySettingsService } from '../settings/visibility/visibility-settings.service';
 import { RemindSettingsService } from '../settings/remind/remind-settings.service';
 import { UpdateCalendarDto } from '../calendar/dto/update-calendar.dto';
+import { CreateCalendarDto } from '../calendar/dto/create-calendar.dto';
 
 @Injectable()
 export class CalendarEntryService {
@@ -42,6 +43,12 @@ export class CalendarEntryService {
       await this.calendarEntryModel.findById(id);
     if (!calendarEntry) throw new NotFoundException(`Calendar entry not found`);
     return calendarEntry;
+  }
+
+  async getCalendarEntriesByCalendar(
+    calendarId: CreateCalendarDto[`_id`],
+  ): Promise<FullCalendarEntryDto[]> {
+    return await this.calendarEntryModel.find({ calendar: calendarId });
   }
 
   async update(

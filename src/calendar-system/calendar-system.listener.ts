@@ -4,6 +4,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { FullUserDto } from '../user/dto/full-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { CreateCalendarDto } from './calendar/dto/create-calendar.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class CalendarSystemListener {
@@ -24,4 +25,7 @@ export class CalendarSystemListener {
   async onUserDeleted(userId: CreateUserDto[`_id`]) {
     await this.calendarSystemService.unsubscribeFromAllCalendars(userId);
   }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async eventsNotify() {}
 }
