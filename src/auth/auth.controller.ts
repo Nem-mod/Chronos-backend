@@ -41,11 +41,7 @@ export class AuthController {
     @Body() user: CreateUserDto,
     // @Body(`calendar`) calendar: CreateCalendarDto,
   ): Promise<FullUserDto> {
-    const calendar: CreateCalendarDto = {
-      name: `My default calendar`,
-      timezone: `Europe/Kyiv`,
-    }; // TODO: remove and ask user for default calendar
-    return await this.authService.register(user, calendar);
+    return await this.authService.register(user);
   }
 
   @HttpCode(204)
@@ -138,7 +134,7 @@ export class AuthController {
     @Request() req: RequestType,
     @Response({ passthrough: true }) res: ResponseType,
   ) {
-    await this.authService.deleteProfile(req.user);
+    await this.authService.deleteProfile(req.user._id);
     await this.authService.deleteAuthCookie(res);
   }
 }

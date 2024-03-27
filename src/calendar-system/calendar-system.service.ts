@@ -71,8 +71,10 @@ export class CalendarSystemService {
     return { calendar: newCalendar, calendarEntry };
   }
 
-  async initCalendarList(user: FullUserDto): Promise<FullCalendarListDto> {
-    return await this.calendarListService.createCalendarList({ _id: user._id });
+  async initCalendarList(
+    userId: CreateUserDto[`_id`],
+  ): Promise<FullCalendarListDto> {
+    return await this.calendarListService.createCalendarList({ _id: userId });
   }
 
   async initTimezoneDatabase(): Promise<void> {

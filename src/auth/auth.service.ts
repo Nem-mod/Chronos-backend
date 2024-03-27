@@ -21,6 +21,7 @@ import { User } from '../user/models/user.model';
 import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { EmailSendService } from '../user/email-send/email-send.service';
 import { CreateCalendarDto } from '../calendar-system/calendar/dto/create-calendar.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class AuthService {
@@ -29,9 +30,9 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly emailSendService: EmailSendService,
-    private readonly calendarSystemService: CalendarSystemService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async validateUser(
@@ -55,16 +56,10 @@ export class AuthService {
     return tokens;
   }
 
-  async register(
-    user: CreateUserDto,
-    defaultCalendar: CreateCalendarDto,
-  ): Promise<FullUserDto> {
+  async register(user: CreateUserDto): Promise<FullUserDto> {
     const newUser: FullUserDto = await this.userService.create(user);
-    await this.calendarSystemService.initCalendarList(newUser);
-    await this.calendarSystemService.createOwnCalendar(
-      defaultCalendar,
-      newUser._id,
-    );
+
+    this.eventEmitter.emit(`user.created`, newUser._id);
 
     return newUser;
   }
@@ -144,8 +139,8 @@ export class AuthService {
     return this.userService.update(currentUser._id, user);
   }
 
-  async deleteProfile(user: FullUserDto): Promise<void> {
-    await this.userService.remove(user._id);
-    await this.calendarSystemService.unsubscribeFromAllCalendars(user._id);
+  async deleteProfile(userId: CreateUserDto[`_id`]): Promise<void> {
+    await this.userService.remove(userId);
+    this.eventEmitter.emit(`user.deleted`, userId);
   }
 }

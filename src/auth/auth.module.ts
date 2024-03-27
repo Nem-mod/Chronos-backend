@@ -7,15 +7,9 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { AccessJwtStrategy } from './strategies/access-jwt.strategy';
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
-import { CalendarSystemModule } from '../calendar-system/calendar-system.module';
 
 @Module({
-  imports: [
-    UserModule,
-    CalendarSystemModule,
-    PassportModule,
-    JwtModule.register({}),
-  ],
+  imports: [UserModule, PassportModule, JwtModule.register({})],
   providers: [
     AuthService,
     LocalStrategy,
@@ -23,5 +17,6 @@ import { CalendarSystemModule } from '../calendar-system/calendar-system.module'
     RefreshJwtStrategy,
   ],
   controllers: [AuthController],
+  exports: [UserModule, AuthService],
 })
 export class AuthModule {}

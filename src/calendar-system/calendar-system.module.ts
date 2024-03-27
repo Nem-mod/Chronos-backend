@@ -47,10 +47,12 @@ import { EventOwnerGuard } from './event/guards/event-owner.guard';
 import { CalendarMemberGuard } from './calendar/guards/calendar-member.guard';
 import { EventMemberGuard } from './event/guards/event-member.guard';
 import { UpdateEventDto } from './event/dto/update-event.dto';
+import { AuthModule } from '../auth/auth.module';
+import { CalendarSystemListener } from './calendar-system.listener';
 
 @Module({
   imports: [
-    UserModule,
+    AuthModule,
     MongooseModule.forFeature([
       { name: Timezone.name, schema: TimezoneSchema },
       { name: RemindSettings.name, schema: RemindSettingsSchema },
@@ -80,6 +82,7 @@ import { UpdateEventDto } from './event/dto/update-event.dto';
     EventOwnerGuard,
     CalendarMemberGuard,
     EventMemberGuard,
+    CalendarSystemListener,
   ],
   exports: [CalendarSystemService, EventService],
 })
