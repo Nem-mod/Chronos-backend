@@ -157,45 +157,42 @@ export class CalendarSystemController {
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @HttpCode(204)
   @Patch(`ownership/promote`)
   async promoteGuestToOwner(
     @ReqCalendar() calendar: FullCalendarDto,
     @Query(`userId`) userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
-    return await this.calendarSystemService.promoteGuestToOwner(
-      calendar._id,
-      userId,
-    );
+  ): Promise<void> {
+    await this.calendarSystemService.promoteGuestToOwner(calendar._id, userId);
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @HttpCode(204)
   @Patch(`ownership/demote`)
   async demoteOwnerToGuest(
     @ReqCalendar() calendar: FullCalendarDto,
     @ReqUser() user: FullUserDto,
     @Query(`userId`) userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
+  ): Promise<void> {
     if (user._id.toString() === userId)
       throw new ForbiddenException(`You can't demote yourself`);
 
-    return await this.calendarSystemService.demtoeOwnerToGuest(
-      calendar._id,
-      userId,
-    );
+    await this.calendarSystemService.demtoeOwnerToGuest(calendar._id, userId);
   }
 
   @UseGuards(AccessJwtAuthGuard, CalendarOwnerGuard)
+  @HttpCode(204)
   @Delete(`ownership/kick`)
   async kickMember(
     @ReqCalendar() calendar: FullCalendarDto,
     @ReqUser() user: FullUserDto,
     @Query(`userId`) userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
+  ): Promise<void> {
     if (user._id.toString() === userId)
       throw new ForbiddenException(
         `You can't kick yourself. Use leave option instead`,
       );
 
-    return await this.calendarSystemService.kickMember(calendar._id, userId);
+    await this.calendarSystemService.kickMember(calendar._id, userId);
   }
 }

@@ -231,21 +231,21 @@ export class CalendarSystemService {
   async promoteGuestToOwner(
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
-    return await this.calendarService.promoteGuestToOwner(calendarId, userId);
+  ): Promise<void> {
+    await this.calendarService.promoteGuestToOwner(calendarId, userId);
   }
 
   async demtoeOwnerToGuest(
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
-    return await this.calendarService.demoteOwnerToGuest(calendarId, userId);
+  ): Promise<void> {
+    await this.calendarService.demoteOwnerToGuest(calendarId, userId);
   }
 
   async kickMember(
     calendarId: CreateCalendarDto[`_id`],
     userId: CreateUserDto[`_id`],
-  ): Promise<FullCalendarDto> {
+  ): Promise<void> {
     const calendarEntry: FullCalendarEntryDto =
       await this.calendarListService.getCalendarEntryByCalendar(
         userId,
@@ -253,7 +253,5 @@ export class CalendarSystemService {
       );
 
     await this.unsubscribeFromCalendar(userId, calendarEntry._id);
-
-    return await this.calendarService.findById(calendarId);
   }
 }
