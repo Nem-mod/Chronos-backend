@@ -136,7 +136,7 @@ export class EventService {
     inviteInfo: EventInviteInfoDto,
     senderName: CreateUserDto[`username`],
   ): Promise<void> {
-    const user = await this.userService.findByUsername(inviteInfo.username);
+    const user = await this.userService.findByEmail(inviteInfo.email);
     const event = await this.findById(inviteInfo.event as string);
 
     inviteInfo.returnUrl = await this.emailSendService.prepareLink(

@@ -49,6 +49,12 @@ export class UserService {
     return user;
   }
 
+  async findByEmail(email: CreateUserDto[`email`]): Promise<User> {
+    const user: User = await this.userModel.findOne({ email }).lean();
+    if (!user) throw new NotFoundException(`User not found`);
+    return user;
+  }
+
   async findById(id: CreateUserDto[`_id`]): Promise<User> {
     const user: User = await this.userModel.findById(id).lean();
     if (!user) throw new NotFoundException(`User not found`);

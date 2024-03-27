@@ -85,9 +85,7 @@ export class CalendarSystemService {
     inviteInfo: CalendarInviteInfoDto,
     senderName: CreateUserDto[`username`],
   ): Promise<void> {
-    const user: User = await this.userService.findByUsername(
-      inviteInfo.username,
-    );
+    const user: User = await this.userService.findByEmail(inviteInfo.email);
     const calendar: FullCalendarDto = await this.calendarService.findById(
       inviteInfo.calendar as string,
     );

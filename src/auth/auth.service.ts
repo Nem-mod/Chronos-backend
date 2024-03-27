@@ -65,7 +65,7 @@ export class AuthService {
   }
 
   async sendVerifyEmail(linkInfo: SendLinkDto): Promise<void> {
-    const user: User = await this.userService.findByUsername(linkInfo.username);
+    const user: User = await this.userService.findByEmail(linkInfo.email);
     if (user.verified) throw new ForbiddenException(`User already verified`);
 
     linkInfo.returnUrl = await this.emailSendService.prepareLink(
