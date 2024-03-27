@@ -82,8 +82,8 @@ export class EventService {
     const events: Event[] = await this.eventModel.find({
       calendar: calendarId,
     });
-    if (!events || events.length === 0)
-      throw new NotFoundException(`Events not found`);
+    // if (!events || events.length === 0)
+    //   throw new NotFoundException(`Events not found`);
     return events;
   }
 
