@@ -14,11 +14,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<FullUserDto> {
-    const user: FullUserDto = await this.authService.validateUser(
-      username,
+  async validate(login: string, password: string): Promise<FullUserDto> {
+    const user: FullUserDto = await this.authService.validateUser({
+      login,
       password,
-    );
+    });
     if (!user.verified) throw new ForbiddenException(`User isn't verified`);
     return user;
   }

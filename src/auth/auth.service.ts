@@ -22,6 +22,7 @@ import { SendLinkDto } from '../user/email-send/dto/send-link.dto';
 import { EmailSendService } from '../user/email-send/email-send.service';
 import { CreateCalendarDto } from '../calendar-system/calendar/dto/create-calendar.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -35,14 +36,16 @@ export class AuthService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async validateUser(
-    username: CreateUserDto[`username`],
-    pass: CreateUserDto[`password`],
-  ): Promise<FullUserDto> {
+  async validateUser(login: LoginDto): Promise<FullUserDto> {
     try {
-      const user: User = await this.userService.findByUsername(username);
+      let user: FullUserDto;
+      try {
+        user = await this.userService.findByUsername(login.login);
+      } catch (err) {
+        user = await this.userService.findByEmail(login.login);
+      }
 
-      if (await bcrypt.compareSync(pass, user.password)) {
+      if (await bcrypt.compareSync(login.password, user.password)) {
         const { password, ...result } = user;
         return result;
       }
